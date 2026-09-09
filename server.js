@@ -16,13 +16,15 @@ app.use(express.json());
 
 const regioesRoutes = require('./routes/regioes.routes');
 const noticiasRoutes = require('./routes/noticias.routes');
-const comentariosRoutes = require('./routes/comentarios.routes');
 const girabotRoutes = require('./routes/girabot.routes');
+const comentariosRoutes = require('./routes/comentarios.routes');
+const usuariosRoutes = require('./routes/usuarios.routes');
 
+app.use('/api/auth', usuariosRoutes);
 app.use('/api/regioes', regioesRoutes);
 app.use('/api/noticias', noticiasRoutes);
-app.use('/api/comentarios', comentariosRoutes);
 app.use('/api/girabot', girabotRoutes);
+app.use('/api/comentarios', comentariosRoutes);
 
 // Serve os arquivos estáticos do front-end (HTML, CSS, JS puro)
 app.use(express.static(path.join(__dirname, 'public')));

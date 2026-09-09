@@ -122,3 +122,43 @@ function renderizarHeaderAuth() {
 }
 
 document.addEventListener('DOMContentLoaded', renderizarHeaderAuth);
+async function cadastrarUsuario(event) {
+  event.preventDefault();
+
+  const nome = document.querySelector('#nome').value;
+  const email = document.querySelector('#email').value;
+  const senha = document.querySelector('#senha').value;
+
+  try {
+    const resposta = await fetch('http://localhost:3000/api/auth/cadastro', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ nome, email, senha })
+    });
+
+    const dados = await resposta.json();
+
+    if (resposta.ok) {
+      // Salva os dados com o ID REAL gerado pelo Supabase
+      localStorage.setItem('girabrasil_usuario', JSON.stringify(dados));
+      alert('Conta criada e salva no Supabase com sucesso!');
+      window.location.href = 'index.html';
+    } else {
+      alert(dados.erro || 'Falha ao cadastrar.');
+    }
+  } catch (erro) {
+    console.error('Erro de conexao:', erro);
+  }
+}
+async function cadastrarUsuario(event) {
+  // Evita o erro se o event não for passado
+  if (event && typeof event.preventDefault === 'function') {
+    event.preventDefault();
+  }
+
+  const nome = document.querySelector('#nome').value;
+  const email = document.querySelector('#email').value;
+  const senha = document.querySelector('#senha').value;
+
+  // Restante da sua lógica de fetch para /api/auth/cadastro...
+}
