@@ -7,7 +7,7 @@
 // ==========================================================================
 
 const CHAVE_USUARIO = 'girabrasil_usuario';
-const SUPABASE_URL = 'https://tybkeihuwpelsmfdmzhj.supabase.co/rest/v1/';
+const SUPABASE_URL = 'https://tybkeihuwpelsmfdmzhj.supabase.co';
 const SUPABASE_ANON_KEY = 'sb_publishable_LpIRhyUfQIl14Ud8vHcoSw_nfTLveAZ';
 
 const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
