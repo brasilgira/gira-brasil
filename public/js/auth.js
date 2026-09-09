@@ -44,25 +44,34 @@ function redirecionarSeJaLogado() {
 // ---- Cadastro ---------------------------------------------------------
 // Usa o Supabase Auth (auth.signUp). O nome vai em user_metadata, então
 // não precisa de tabela extra pra já funcionar.
-async function cadastrarUsuario({ nome, email, senha }) {
+async function cadastrarUsuario(event) {
+  if (event && typeof event.preventDefault === 'function') {
+    event.preventDefault();
+  }
+
+  const nome = document.querySelector('#nome')?.value;
+  const email = document.querySelector('#email')?.value;
+  const senha = document.querySelector('#senha')?.value;
+
   const { data, error } = await supabaseClient.auth.signUp({
-    email,
+    email: email,
     password: senha,
-    // "display_name" é a chave que o painel do Supabase (Authentication > Users)
-    // procura pra mostrar na coluna "Display name". Guardamos "nome" também
-    // pra usar no nosso próprio front-end.
-    options: { data: { nome, display_name: nome } }
+    options: {
+      data: { nome: nome }
+    }
   });
 
-  if (error) throw error;
+  if (error) {
+    alert('Erro no cadastro: ' + error.message);
+    return;
+  }
 
-  definirUsuarioLogado({
-    email,
-    nome,
-    id: data.user ? data.user.id : null
-  });
-
-  return data;
+  // Se a conta for criada com sucesso, já salva o usuário e entra direto
+  if (data.user) {
+    localStorage.setItem('girabrasil_usuario', JSON.stringify(data.user));
+    alert('Conta criada com sucesso!');
+    window.location.href = 'index.html';
+  }
 }
 
 // ---- Login -------------------------------------------------------------
