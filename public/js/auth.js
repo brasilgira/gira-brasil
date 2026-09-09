@@ -7,6 +7,10 @@
 // ==========================================================================
 
 const CHAVE_USUARIO = 'girabrasil_usuario';
+const SUPABASE_URL = 'https://tybkeihuwpelsmfdmzhj.supabase.co/rest/v1/';
+const SUPABASE_ANON_KEY = 'sb_publishable_LpIRhyUfQIl14Ud8vHcoSw_nfTLveAZ';
+
+const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 function obterUsuarioLogado() {
   try {
@@ -61,25 +65,34 @@ async function cadastrarUsuario({ nome, email, senha }) {
   return data;
 }
 
-// ---- Login --------------------------------------------------------------
+// ---- Login -------------------------------------------------------------
 async function logarUsuario({ email, senha }) {
-  const { data, error } = await supabaseClient.auth.signInWithPassword({
-    email,
-    password: senha
-  });
+  try {
+    const { data, error } = await supabaseClient.auth.signInWithPassword({
+      email,
+      password: senha
+    });
 
-  if (error) throw error;
+    if (error) throw error;
 
-  const meta = (data.user && data.user.user_metadata) || {};
-  const nome = meta.nome || meta.display_name || email.split('@')[0];
+    const meta = (data.user && data.user.user_metadata) || {};
+    const nome = meta.nome || meta.display_name || email.split('@')[0];
 
-  definirUsuarioLogado({
-    email,
-    nome,
-    id: data.user ? data.user.id : null
-  });
+    definirUsuarioLogado({
+      email,
+      nome,
+      id: data.user ? data.user.id : null
+    });
 
-  return data;
+    alert('Login realizado com sucesso!');
+    window.location.href = 'index.html';
+  } catch (error) {
+    console.error('Erro de autenticação:', error);
+    const mensagem = error.message === 'Invalid login credentials' 
+      ? 'E-mail ou senha incorretos.' 
+      : error.message;
+    alert('Erro ao entrar: ' + mensagem);
+  }
 }
 
 // ---- Header (Entrar/Criar conta -> nome + avatar) ------------------------
