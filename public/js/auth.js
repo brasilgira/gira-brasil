@@ -1,9 +1,16 @@
 // ==========================================================================
 // GiraBrasil — Autenticação com Supabase (login.html e cadastro.html)
+//
+// IMPORTANTE: este arquivo usa EXCLUSIVAMENTE o Supabase Auth
+// (supabaseClient.auth.signUp / signInWithPassword). Não existe mais
+// nenhum caminho alternativo via fetch('/api/auth/cadastro') — se essa
+// rota ainda existir no backend, ela não é mais chamada por este arquivo,
+// porque ter dois sistemas de conta ao mesmo tempo é exatamente o que
+// estava causando o login não reconhecer contas criadas pelo outro caminho.
+//
 // O restante do site (Jogos, GiraBot, Notícia) continua lendo o "usuário
-// logado" do localStorage, então guardamos os dados básicos lá depois que
-// o Supabase confirma o login/cadastro. Isso evita reescrever o site todo
-// de uma vez — só as telas de auth falam com o banco por enquanto.
+// logado" do localStorage — guardamos os dados básicos lá depois que o
+// Supabase confirma o login/cadastro.
 // ==========================================================================
 
 const CHAVE_USUARIO = 'girabrasil_usuario';
@@ -41,23 +48,23 @@ function redirecionarSeJaLogado() {
   }
 }
 
-// ---- Cadastro ---------------------------------------------------------
-// Usa o Supabase Auth (auth.signUp). O nome vai em user_metadata, então
-// não precisa de tabela extra pra já funcionar.
+// ---- Cadastro ------------------------------------------------------------
+// Único caminho de cadastro agora: Supabase Auth (auth.signUp).
+// O nome vai em user_metadata, então não precisa de tabela extra.
 async function cadastrarUsuario(event) {
   if (event && typeof event.preventDefault === 'function') {
     event.preventDefault();
   }
 
-  const nome = document.querySelector('#nome')?.value;
-  const email = document.querySelector('#email')?.value;
-  const senha = document.querySelector('#senha')?.value;
+  const nome = document.querySelector('#nome')?.value.trim();
+  const email = document.querySelector('#email')?.value.trim();
+  const senha = document.querySelector('#senha')?.value.trim();
 
   const { data, error } = await supabaseClient.auth.signUp({
-    email: email,
+    email,
     password: senha,
     options: {
-      data: { nome: nome }
+      data: { nome }
     }
   });
 
@@ -66,16 +73,26 @@ async function cadastrarUsuario(event) {
     return;
   }
 
-  // Se a conta for criada com sucesso, já salva o usuário e entra direto
   if (data.user) {
-    localStorage.setItem('girabrasil_usuario', JSON.stringify(data.user));
+    definirUsuarioLogado({
+      email,
+      nome,
+      id: data.user.id
+    });
     alert('Conta criada com sucesso!');
-    window.location.href = 'index.html';
+    window.location.href = obterRedirectDaUrl() || 'index.html';
   }
 }
 
-// ---- Login -------------------------------------------------------------
-async function logarUsuario({ email, senha }) {
+// ---- Login -----------------------------------------------------------
+async function logarUsuario(event) {
+  if (event && typeof event.preventDefault === 'function') {
+    event.preventDefault();
+  }
+
+  const email = document.querySelector('#email')?.value.trim();
+  const senha = document.querySelector('#senha')?.value.trim();
+
   try {
     const { data, error } = await supabaseClient.auth.signInWithPassword({
       email,
@@ -94,37 +111,30 @@ async function logarUsuario({ email, senha }) {
     });
 
     alert('Login realizado com sucesso!');
-    window.location.href = 'index.html';
+    window.location.href = obterRedirectDaUrl() || 'index.html';
   } catch (error) {
     console.error('Erro de autenticação:', error);
-    const mensagem = error.message === 'Invalid login credentials' 
-      ? 'E-mail ou senha incorretos.' 
+    const mensagem = error.message === 'Invalid login credentials'
+      ? 'E-mail ou senha incorretos.'
       : error.message;
     alert('Erro ao entrar: ' + mensagem);
   }
 }
 
-// ---- Header (Entrar/Criar conta -> nome + avatar) ------------------------
-// Roda em toda página que carrega este arquivo. Troca o bloco
-// ".header-acoes" (que por padrão tem os links de Entrar/Criar conta)
-// por um mini-perfil com bolinha (iniciais) + nome, quando há usuário
-// logado no localStorage.
+// ---- Header (Entrar/Criar conta -> nome + avatar) -------------------------
 function renderizarHeaderAuth() {
   const container = document.querySelector('.header-acoes');
   if (!container) return;
 
   const usuario = obterUsuarioLogado();
-
-  if (!usuario) {
-    return; // mantém o HTML padrão (Entrar / Criar conta)
-  }
+  if (!usuario) return; // mantém o HTML padrão (Entrar / Criar conta)
 
   const nome = usuario.nome || usuario.email.split('@')[0];
   const iniciais = nome
     .trim()
     .split(/\s+/)
     .slice(0, 2)
-    .map(parte => parte[0])
+    .map((parte) => parte[0])
     .join('')
     .toUpperCase();
 
@@ -144,43 +154,3 @@ function renderizarHeaderAuth() {
 }
 
 document.addEventListener('DOMContentLoaded', renderizarHeaderAuth);
-async function cadastrarUsuario(event) {
-  event.preventDefault();
-
-  const nome = document.querySelector('#nome').value;
-  const email = document.querySelector('#email').value;
-  const senha = document.querySelector('#senha').value;
-
-  try {
-    const resposta = await fetch('http://localhost:3000/api/auth/cadastro', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ nome, email, senha })
-    });
-
-    const dados = await resposta.json();
-
-    if (resposta.ok) {
-      // Salva os dados com o ID REAL gerado pelo Supabase
-      localStorage.setItem('girabrasil_usuario', JSON.stringify(dados));
-      alert('Conta criada e salva no Supabase com sucesso!');
-      window.location.href = 'index.html';
-    } else {
-      alert(dados.erro || 'Falha ao cadastrar.');
-    }
-  } catch (erro) {
-    console.error('Erro de conexao:', erro);
-  }
-}
-async function cadastrarUsuario(event) {
-  // Evita o erro se o event não for passado
-  if (event && typeof event.preventDefault === 'function') {
-    event.preventDefault();
-  }
-
-  const nome = document.querySelector('#nome').value;
-  const email = document.querySelector('#email').value;
-  const senha = document.querySelector('#senha').value;
-
-  // Restante da sua lógica de fetch para /api/auth/cadastro...
-}
