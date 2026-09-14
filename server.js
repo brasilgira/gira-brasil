@@ -19,7 +19,9 @@ const noticiasRoutes = require('./routes/noticias.routes');
 const girabotRoutes = require('./routes/girabot.routes');
 const comentariosRoutes = require('./routes/comentarios.routes');
 const usuariosRoutes = require('./routes/usuarios.routes');
+const adminRoutes = require('./routes/admin.routes'); 
 
+app.use('/api/admin', adminRoutes);
 app.use('/api/auth', usuariosRoutes);
 app.use('/api/regioes', regioesRoutes);
 app.use('/api/noticias', noticiasRoutes);
