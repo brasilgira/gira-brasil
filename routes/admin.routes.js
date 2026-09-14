@@ -3,7 +3,7 @@ const express = require("express");
 const router = express.Router();
 
 const adminController = require("../controllers/admin.controller");
-
+const verificarAdmin = require("../public/js/verificarAdmin");
 
 // Toda rota abaixo passa primeiro pelo verificarAdmin — sem exceção.
 router.get("/noticias", verificarAdmin, adminController.listarNoticias);

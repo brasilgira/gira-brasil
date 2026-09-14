@@ -3,24 +3,39 @@
 // Confere se quem está fazendo a requisição é um usuário autenticado E
 // marcado como admin (app_metadata.is_admin === true) no Supabase Auth.
 //
-// A verificação usa a SERVICE_ROLE_KEY, que só existe no backend (.env /
-// painel da Vercel) — nunca no front-end. É essa chave que permite ao
-// backend consultar o usuário dono de um token com privilégio total,
-// inclusive lendo app_metadata (que o próprio usuário/navegador não
-// consegue alterar).
-//
-// Uso: aplicar como middleware nas rotas de admin.
-//   router.delete("/noticias/:id", verificarAdmin, adminController.apagarNoticia);
+// CORREÇÃO IMPORTANTE em relação à versão anterior: o cliente do Supabase
+// agora é criado sob demanda (dentro da função), não no topo do arquivo.
+// Antes, se SUPABASE_URL ou SUPABASE_SERVICE_ROLE_KEY estivessem ausentes
+// ou errados, o createClient() lançava um erro assim que o arquivo era
+// importado — o que derrubava o server.js inteiro (todas as rotas do
+// site, não só as de admin) já que o require acontece em cascata no
+// carregamento do servidor. Agora, se faltar configuração, só a rota de
+// admin responde com erro — o resto do site continua no ar normalmente.
 
 const { createClient } = require("@supabase/supabase-js");
 
-const supabaseAdmin = createClient(
-  process.env.SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_ROLE_KEY
-);
+let supabaseAdmin = null;
+
+function obterClienteSupabaseAdmin() {
+  if (supabaseAdmin) return supabaseAdmin;
+
+  const url = process.env.SUPABASE_URL;
+  const chave = process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+  if (!url || !chave) {
+    throw new Error(
+      "Configuração ausente: verifique SUPABASE_URL e SUPABASE_SERVICE_ROLE_KEY nas variáveis de ambiente."
+    );
+  }
+
+  supabaseAdmin = createClient(url, chave);
+  return supabaseAdmin;
+}
 
 async function verificarAdmin(req, res, next) {
   try {
+    const cliente = obterClienteSupabaseAdmin();
+
     const authHeader = req.headers.authorization || "";
     const token = authHeader.startsWith("Bearer ")
       ? authHeader.slice("Bearer ".length)
@@ -30,8 +45,7 @@ async function verificarAdmin(req, res, next) {
       return res.status(401).json({ erro: "Token de acesso não fornecido." });
     }
 
-    // Pede pro Supabase validar o token e devolver o usuário dono dele.
-    const { data, error } = await supabaseAdmin.auth.getUser(token);
+    const { data, error } = await cliente.auth.getUser(token);
 
     if (error || !data || !data.user) {
       return res.status(401).json({ erro: "Token inválido ou expirado." });
@@ -44,13 +58,10 @@ async function verificarAdmin(req, res, next) {
       return res.status(403).json({ erro: "Acesso restrito a administradores." });
     }
 
-    // Deixa o usuário autenticado disponível pros controllers, se precisar
-    // (ex: registrar quem fez a ação num log).
     req.usuarioAdmin = usuario;
-
     next();
   } catch (erroInesperado) {
-    console.error("Erro no middleware verificarAdmin:", erroInesperado);
+    console.error("Erro no middleware verificarAdmin:", erroInesperado.message);
     return res.status(500).json({ erro: "Erro ao verificar permissão de administrador." });
   }
 }
