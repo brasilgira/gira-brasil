@@ -9,8 +9,28 @@
 </head>
 <body>
 
-  <!-- Header padrão do site entra aqui, igual às outras páginas (auth.js
-       cuida de renderizar o link "Admin" condicionalmente) -->
+  <!-- Header — mesmo padrão das outras páginas do site.
+       Se o teu header real (index.html, noticias.html etc.) tiver uma
+       marcação diferente, substitui este bloco pelo mesmo HTML das
+       outras páginas, mantendo a classe "header-acoes" no container da
+       direita — é nela que auth.js injeta o mini-perfil e o link Admin. -->
+  <header class="site-header">
+    <div class="site-header-inner">
+      <a href="index.html" class="logo">GIRA-BRASIL</a>
+      <nav class="nav-principal">
+        <a href="index.html">Início</a>
+        <a href="noticias.html">Notícias</a>
+        <a href="regioes.html">Regiões</a>
+        <a href="jogos.html">Jogos</a>
+        <a href="girabot.html">Gira-Bot</a>
+        <a href="sobre.html">Sobre</a>
+      </nav>
+      <div class="header-acoes">
+        <a href="login.html" class="botao-entrar">Entrar</a>
+        <a href="cadastro.html" class="botao-criar-conta">Criar conta</a>
+      </div>
+    </div>
+  </header>
 
   <main class="admin-main">
     <h1 class="admin-titulo">Painel Administrativo</h1>
@@ -34,7 +54,9 @@
           </tr>
         </thead>
         <tbody id="tabela-noticias-corpo">
-          <!-- preenchido via js/admin.js -->
+          <tr>
+            <td colspan="4" class="admin-vazio">Carregando notícias…</td>
+          </tr>
         </tbody>
       </table>
     </section>
@@ -50,13 +72,30 @@
           </tr>
         </thead>
         <tbody id="tabela-comentarios-corpo">
-          <!-- preenchido via js/admin.js -->
+          <tr>
+            <td colspan="4" class="admin-vazio">Carregando comentários…</td>
+          </tr>
         </tbody>
       </table>
     </section>
   </main>
 
-  <!-- Modal simples de edição de comentário -->
+  <!-- Modal de edição de notícia -->
+  <div id="modal-editar-noticia" class="admin-modal" hidden>
+    <div class="admin-modal-caixa">
+      <h2>Editar notícia</h2>
+      <label class="admin-modal-label" for="modal-noticia-titulo">Título</label>
+      <input id="modal-noticia-titulo" type="text" />
+      <label class="admin-modal-label" for="modal-noticia-conteudo">Conteúdo</label>
+      <textarea id="modal-noticia-conteudo" rows="6"></textarea>
+      <div class="admin-modal-acoes">
+        <button id="modal-noticia-cancelar" type="button" class="botao-secundario">Cancelar</button>
+        <button id="modal-noticia-salvar" type="button" class="botao-primario">Salvar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal de edição de comentário -->
   <div id="modal-editar-comentario" class="admin-modal" hidden>
     <div class="admin-modal-caixa">
       <h2>Editar comentário</h2>
@@ -68,6 +107,7 @@
     </div>
   </div>
 
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <script src="js/auth.js"></script>
   <script src="js/admin.js"></script>
 </body>

@@ -3,9 +3,6 @@
 // SQL das ações administrativas. Segue o schema real (usuario, regiao,
 // noticias, comentario — sem tabela administrador separada) e a regra de
 // sempre usar soft delete (ativo = false), nunca DELETE FROM de verdade.
-//
-// Ajuste o import do pool abaixo se config/db.js exportar de forma
-// diferente do resto do projeto (ex: module.exports = pool vs { pool }).
 const pool = require("../config/db");
 
 // ---------- Notícias ----------
@@ -19,6 +16,14 @@ async function listarNoticias() {
      ORDER BY n.criado_em DESC`
   );
   return resultado.rows;
+}
+
+async function editarNoticia(id, titulo, conteudo) {
+  const resultado = await pool.query(
+    `UPDATE noticias SET titulo = $1, conteudo = $2 WHERE id = $3 RETURNING *`,
+    [titulo, conteudo, id]
+  );
+  return resultado.rows[0] || null;
 }
 
 async function apagarNoticia(id) {
@@ -60,6 +65,7 @@ async function apagarComentario(id) {
 
 module.exports = {
   listarNoticias,
+  editarNoticia,
   apagarNoticia,
   listarComentarios,
   editarComentario,

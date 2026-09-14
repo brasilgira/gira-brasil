@@ -1,10 +1,10 @@
 // js/admin.js
 //
 // Assume que js/auth.js já rodou antes e deixou disponível a instância
-// global `supabaseClient` (mesma usada em signUp/signInWithPassword).
-// Aqui só usamos ela pra pegar o token da sessão atual e mandar nas
-// requisições — quem decide se o usuário É admin de verdade é sempre o
-// middleware verificarAdmin no backend, nunca este arquivo.
+// global `supabaseClient`. Aqui só usamos ela pra pegar o token da sessão
+// atual e mandar nas requisições — quem decide se o usuário É admin de
+// verdade é sempre o middleware verificarAdmin no backend, nunca este
+// arquivo.
 
 const avisoEl = document.getElementById("admin-aviso");
 const tabelaNoticiasCorpo = document.getElementById("tabela-noticias-corpo");
@@ -58,11 +58,21 @@ async function carregarNoticias() {
     renderizarNoticias(noticias);
   } catch (erro) {
     console.error(erro);
+    tabelaNoticiasCorpo.innerHTML = `
+      <tr><td colspan="4" class="admin-vazio">Não foi possível carregar as notícias.</td></tr>
+    `;
   }
 }
 
 function renderizarNoticias(noticias) {
   tabelaNoticiasCorpo.innerHTML = "";
+
+  if (!noticias || noticias.length === 0) {
+    tabelaNoticiasCorpo.innerHTML = `
+      <tr><td colspan="4" class="admin-vazio">Nenhuma notícia cadastrada ainda.</td></tr>
+    `;
+    return;
+  }
 
   noticias.forEach((noticia) => {
     const linha = document.createElement("tr");
@@ -71,14 +81,18 @@ function renderizarNoticias(noticias) {
       <td>${escaparHtml(noticia.autor_nome || "—")}</td>
       <td>${escaparHtml(noticia.regiao_nome || "—")}</td>
       <td>
+        <button class="admin-botao-editar" data-id="${noticia.id}" type="button">Editar</button>
         <button class="admin-botao-apagar" data-id="${noticia.id}" type="button">Apagar</button>
       </td>
     `;
     tabelaNoticiasCorpo.appendChild(linha);
-  });
 
-  tabelaNoticiasCorpo.querySelectorAll(".admin-botao-apagar").forEach((botao) => {
-    botao.addEventListener("click", () => apagarNoticia(botao.dataset.id));
+    linha.querySelector(".admin-botao-editar").addEventListener("click", () => {
+      abrirModalEdicaoNoticia(noticia.id, noticia.titulo, noticia.conteudo || "");
+    });
+    linha.querySelector(".admin-botao-apagar").addEventListener("click", () => {
+      apagarNoticia(noticia.id);
+    });
   });
 }
 
@@ -95,6 +109,47 @@ async function apagarNoticia(id) {
   }
 }
 
+// ---------- Modal de edição de notícia ----------
+
+let idNoticiaEmEdicao = null;
+
+const modalNoticia = document.getElementById("modal-editar-noticia");
+const modalNoticiaTitulo = document.getElementById("modal-noticia-titulo");
+const modalNoticiaConteudo = document.getElementById("modal-noticia-conteudo");
+
+function abrirModalEdicaoNoticia(id, tituloAtual, conteudoAtual) {
+  idNoticiaEmEdicao = id;
+  modalNoticiaTitulo.value = tituloAtual;
+  modalNoticiaConteudo.value = conteudoAtual;
+  modalNoticia.hidden = false;
+}
+
+function fecharModalEdicaoNoticia() {
+  idNoticiaEmEdicao = null;
+  modalNoticia.hidden = true;
+}
+
+document.getElementById("modal-noticia-cancelar").addEventListener("click", fecharModalEdicaoNoticia);
+
+document.getElementById("modal-noticia-salvar").addEventListener("click", async () => {
+  if (!idNoticiaEmEdicao) return;
+
+  try {
+    await chamarApiAdmin(`/noticias/${idNoticiaEmEdicao}`, {
+      method: "PUT",
+      body: JSON.stringify({
+        titulo: modalNoticiaTitulo.value,
+        conteudo: modalNoticiaConteudo.value,
+      }),
+    });
+    fecharModalEdicaoNoticia();
+    carregarNoticias();
+  } catch (erro) {
+    console.error(erro);
+    alert("Não foi possível salvar a notícia.");
+  }
+});
+
 // ---------- Comentários ----------
 
 let idComentarioEmEdicao = null;
@@ -105,11 +160,21 @@ async function carregarComentarios() {
     renderizarComentarios(comentarios);
   } catch (erro) {
     console.error(erro);
+    tabelaComentariosCorpo.innerHTML = `
+      <tr><td colspan="4" class="admin-vazio">Não foi possível carregar os comentários.</td></tr>
+    `;
   }
 }
 
 function renderizarComentarios(comentarios) {
   tabelaComentariosCorpo.innerHTML = "";
+
+  if (!comentarios || comentarios.length === 0) {
+    tabelaComentariosCorpo.innerHTML = `
+      <tr><td colspan="4" class="admin-vazio">Nenhum comentário cadastrado ainda.</td></tr>
+    `;
+    return;
+  }
 
   comentarios.forEach((comentario) => {
     const linha = document.createElement("tr");

@@ -1,5 +1,105 @@
 /* css/admin.css — tela do painel administrativo */
 
+.site-header {
+  background: #F7F4EC;
+  border-bottom: 1px solid #E8E3D4;
+}
+
+.site-header-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 32px;
+}
+
+.logo {
+  font-family: "Fraunces", serif;
+  font-size: 1.3rem;
+  letter-spacing: 0.04em;
+  color: #16281F;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.nav-principal {
+  display: flex;
+  gap: 28px;
+  flex: 1;
+  justify-content: center;
+}
+
+.nav-principal a {
+  font-family: "Inter", sans-serif;
+  font-size: 0.95rem;
+  color: #2A2E26;
+  text-decoration: none;
+}
+
+.nav-principal a:hover {
+  color: #16281F;
+  font-weight: 600;
+}
+
+.header-acoes {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.botao-entrar,
+.botao-criar-conta {
+  font-family: "Inter", sans-serif;
+  font-size: 0.9rem;
+  text-decoration: none;
+  padding: 8px 14px;
+  border-radius: 6px;
+}
+
+.botao-entrar {
+  color: #16281F;
+}
+
+.botao-criar-conta {
+  background: #16281F;
+  color: #F7F4EC;
+}
+
+.perfil-usuario {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  font-family: "Inter", sans-serif;
+}
+
+.perfil-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #16281F;
+  color: #F7F4EC;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.header-link-admin {
+  font-family: "Inter", sans-serif;
+  font-size: 0.9rem;
+  color: #16281F;
+  text-decoration: none;
+  border: 1px solid #DDD7C7;
+  padding: 6px 12px;
+  border-radius: 6px;
+}
+
+/* ---------- Corpo do painel ---------- */
+
 .admin-main {
   max-width: 960px;
   margin: 0 auto;
@@ -87,6 +187,13 @@
   max-width: 360px;
 }
 
+.admin-vazio {
+  text-align: center;
+  color: #7A7563;
+  font-style: italic;
+  padding: 24px 16px !important;
+}
+
 .admin-botao-apagar,
 .admin-botao-editar {
   font-family: "Inter", sans-serif;
@@ -109,6 +216,8 @@
   border-color: #DDD7C7;
 }
 
+/* ---------- Modal ---------- */
+
 .admin-modal {
   position: fixed;
   inset: 0;
@@ -119,12 +228,44 @@
   z-index: 50;
 }
 
+/* Sem esta regra, o atributo [hidden] do HTML não tem efeito sobre o
+   modal, porque a regra acima (.admin-modal { display: flex; }) é uma
+   regra de autor e sobrescreve o [hidden] { display: none; } padrão do
+   navegador (regra do user agent — CSS de autor sempre vence). */
+.admin-modal[hidden] {
+  display: none;
+}
+
 .admin-modal-caixa {
   background: #F7F4EC;
   border-radius: 12px;
   padding: 24px;
   width: min(480px, 90vw);
   font-family: "Inter", sans-serif;
+}
+
+.admin-modal-caixa h2 {
+  font-family: "Fraunces", serif;
+  color: #16281F;
+  margin-bottom: 4px;
+}
+
+.admin-modal-label {
+  display: block;
+  font-family: "Inter", sans-serif;
+  font-size: 0.85rem;
+  color: #4B5346;
+  margin-top: 14px;
+  margin-bottom: 4px;
+}
+
+.admin-modal-caixa input[type="text"] {
+  width: 100%;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #DDD7C7;
+  font-family: "Inter", sans-serif;
+  box-sizing: border-box;
 }
 
 .admin-modal-caixa textarea {
@@ -135,6 +276,7 @@
   border: 1px solid #DDD7C7;
   font-family: "Inter", sans-serif;
   resize: vertical;
+  box-sizing: border-box;
 }
 
 .admin-modal-acoes {

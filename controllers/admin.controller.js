@@ -11,6 +11,28 @@ async function listarNoticias(req, res) {
   }
 }
 
+async function editarNoticia(req, res) {
+  try {
+    const { id } = req.params;
+    const { titulo, conteudo } = req.body;
+
+    if (!titulo || !titulo.trim()) {
+      return res.status(400).json({ erro: "O título não pode ficar vazio." });
+    }
+
+    const noticia = await adminModel.editarNoticia(id, titulo.trim(), conteudo ?? "");
+
+    if (!noticia) {
+      return res.status(404).json({ erro: "Notícia não encontrada." });
+    }
+
+    res.status(200).json({ mensagem: "Notícia atualizada.", noticia });
+  } catch (erro) {
+    console.error("Erro ao editar notícia (admin):", erro);
+    res.status(500).json({ erro: "Erro ao editar notícia." });
+  }
+}
+
 async function apagarNoticia(req, res) {
   try {
     const { id } = req.params;
@@ -77,6 +99,7 @@ async function apagarComentario(req, res) {
 
 module.exports = {
   listarNoticias,
+  editarNoticia,
   apagarNoticia,
   listarComentarios,
   editarComentario,
