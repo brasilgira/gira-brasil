@@ -10,7 +10,9 @@
 //
 // O restante do site (Jogos, GiraBot, Notícia) continua lendo o "usuário
 // logado" do localStorage — guardamos os dados básicos lá depois que o
-// Supabase confirma o login/cadastro.
+// Supabase confirma o login/cadastro. Isso agora inclui is_admin, lido do
+// app_metadata do Supabase (o único lugar em que essa permissão pode ser
+// setada — nunca pelo navegador).
 // ==========================================================================
 
 const CHAVE_USUARIO = 'girabrasil_usuario';
@@ -77,7 +79,8 @@ async function cadastrarUsuario(event) {
     definirUsuarioLogado({
       email,
       nome,
-      id: data.user.id
+      id: data.user.id,
+      is_admin: data.user.app_metadata?.is_admin === true
     });
     alert('Conta criada com sucesso!');
     window.location.href = obterRedirectDaUrl() || 'index.html';
@@ -107,7 +110,8 @@ async function logarUsuario(event) {
     definirUsuarioLogado({
       email,
       nome,
-      id: data.user ? data.user.id : null
+      id: data.user ? data.user.id : null,
+      is_admin: data.user?.app_metadata?.is_admin === true
     });
 
     alert('Login realizado com sucesso!');
@@ -151,6 +155,25 @@ function renderizarHeaderAuth() {
       window.location.reload();
     }
   });
+
+  renderizarLinkAdmin(usuario);
+}
+
+// ---- Link "Admin" no header (só aparece pra quem tem is_admin) -----------
+function renderizarLinkAdmin(usuario) {
+  const linkExistente = document.getElementById('header-link-admin');
+  if (linkExistente) linkExistente.remove();
+
+  if (!usuario || !usuario.is_admin) return;
+
+  const link = document.createElement('a');
+  link.id = 'header-link-admin';
+  link.href = 'admin.html';
+  link.textContent = 'Admin';
+  link.className = 'header-link-admin';
+
+  const container = document.querySelector('.header-acoes');
+  if (container) container.prepend(link);
 }
 
 document.addEventListener('DOMContentLoaded', renderizarHeaderAuth);

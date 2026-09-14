@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Painel Administrativo — Gira Brasil</title>
+  <link rel="stylesheet" href="css/base.css" />
+  <link rel="stylesheet" href="css/admin.css" />
+</head>
+<body>
+
+  <!-- Header padrão do site entra aqui, igual às outras páginas (auth.js
+       cuida de renderizar o link "Admin" condicionalmente) -->
+
+  <main class="admin-main">
+    <h1 class="admin-titulo">Painel Administrativo</h1>
+    <p class="admin-subtitulo">Gerencie notícias e comentários publicados na plataforma.</p>
+
+    <div id="admin-aviso" class="admin-aviso" hidden></div>
+
+    <nav class="admin-abas" aria-label="Seções do painel">
+      <button class="admin-aba admin-aba--ativa" data-aba="noticias" type="button">Notícias</button>
+      <button class="admin-aba" data-aba="comentarios" type="button">Comentários</button>
+    </nav>
+
+    <section id="painel-noticias" class="admin-painel">
+      <table class="admin-tabela">
+        <thead>
+          <tr>
+            <th>Título</th>
+            <th>Autor</th>
+            <th>Região</th>
+            <th>Ação</th>
+          </tr>
+        </thead>
+        <tbody id="tabela-noticias-corpo">
+          <!-- preenchido via js/admin.js -->
+        </tbody>
+      </table>
+    </section>
+
+    <section id="painel-comentarios" class="admin-painel" hidden>
+      <table class="admin-tabela">
+        <thead>
+          <tr>
+            <th>Comentário</th>
+            <th>Autor</th>
+            <th>Notícia</th>
+            <th>Ações</th>
+          </tr>
+        </thead>
+        <tbody id="tabela-comentarios-corpo">
+          <!-- preenchido via js/admin.js -->
+        </tbody>
+      </table>
+    </section>
+  </main>
+
+  <!-- Modal simples de edição de comentário -->
+  <div id="modal-editar-comentario" class="admin-modal" hidden>
+    <div class="admin-modal-caixa">
+      <h2>Editar comentário</h2>
+      <textarea id="modal-editar-texto" rows="4"></textarea>
+      <div class="admin-modal-acoes">
+        <button id="modal-editar-cancelar" type="button" class="botao-secundario">Cancelar</button>
+        <button id="modal-editar-salvar" type="button" class="botao-primario">Salvar</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/auth.js"></script>
+  <script src="js/admin.js"></script>
+</body>
+</html>
