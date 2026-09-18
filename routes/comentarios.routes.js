@@ -8,4 +8,7 @@ router.get('/noticia/:noticiaId', comentariosController.listarPorNoticia);
 // POST /api/comentarios -> Salva um comentário novo
 router.post('/', comentariosController.criar);
 
+// POST /api/comentarios/:id/curtir -> Curte/descurte um comentário (toggle)
+router.post('/:id/curtir', comentariosController.curtir);
+
 module.exports = router;

@@ -123,14 +123,35 @@ const noticiasOrdenadas = [...mesmaCategoria, ...outrasCategorias];
 const leiaTambem = noticiasOrdenadas.slice(0, 2);
 const relacionadas = noticiasOrdenadas.slice(0, 3);
 
-// Comentários de exemplo (usuários fictícios) — igual antes, ainda não vem
-// do backend nesta tela (isso é dívida técnica já conhecida do projeto:
-// o formulário de comentário só atualiza o estado local do React).
-const comentariosIniciais = [
-  { id: 1, iniciais: 'LC', nome: 'Lucas', data: '14 de agosto', texto: 'É importante que essas informações cheguem para mais pessoas.', curtidas: 12, curtido: false },
-  { id: 2, iniciais: 'MA', nome: 'Marina', data: '14 de agosto', texto: 'Muito boa a reportagem, mostra bem a urgência do monitoramento contínuo da floresta.', curtidas: 7, curtido: false },
-  { id: 3, iniciais: 'RS', nome: 'Rafael', data: '13 de agosto', texto: 'Gostaria de ver mais dados sobre as regiões com maior incidência de alertas.', curtidas: 3, curtido: false },
-];
+// Comentários e curtidas: dados de verdade, vindos da API (/api/comentarios).
+// Nada de usuário fictício aqui — a lista começa vazia e é preenchida pelo
+// fetch em App() assim que a página carrega.
+
+// Pega o usuário logado (gravado pelo js/auth.js depois do login/cadastro
+// via Supabase). Retorna null se ninguém estiver logado.
+function obterUsuarioSessao() {
+  try {
+    const bruto = localStorage.getItem('girabrasil_usuario');
+    return bruto ? JSON.parse(bruto) : null;
+  } catch {
+    return null;
+  }
+}
+
+// Transforma "Marina Silva" em "MS" pro avatar do comentário
+function obterIniciais(nome) {
+  if (!nome) return '?';
+  return nome.trim().split(/\s+/).slice(0, 2).map((p) => p[0]).join('').toUpperCase();
+}
+
+// Formata a data do comentário de um jeito simples e amigável
+function formatarDataComentario(isoString) {
+  const data = new Date(isoString);
+  if (Number.isNaN(data.getTime())) return '';
+  const diffMs = Date.now() - data.getTime();
+  if (diffMs < 60 * 1000) return 'agora';
+  return data.toLocaleDateString('pt-BR', { day: 'numeric', month: 'long' });
+}
 
 // Traduz cada "bloco" do array `corpo` (vindo de noticias-data.js) no JSX
 // correspondente. Adicionar um novo tipo de bloco no futuro = adicionar um
@@ -252,7 +273,7 @@ function ModalCompartilhar({ aberto, onFechar }) {
   );
 }
 
-function Comentarios({ comentarios, onCurtirComentario, onEnviar }) {
+function Comentarios({ comentarios, carregando, erro, enviando, onCurtirComentario, onEnviar }) {
   const [texto, setTexto] = useState('');
 
   function enviar() {
@@ -277,30 +298,46 @@ function Comentarios({ comentarios, onCurtirComentario, onEnviar }) {
           onChange={(e) => setTexto(e.target.value)}
           placeholder="Escreva um comentário..."
           aria-label="Escrever comentário"
+          disabled={enviando}
         ></textarea>
         <div className="comment-form-actions">
-          <button onClick={enviar}>Comentar</button>
+          <button onClick={enviar} disabled={enviando}>
+            {enviando ? 'Enviando...' : 'Comentar'}
+          </button>
         </div>
       </div>
 
-      <div className="comment-list">
-        {comentarios.map((c) => (
-          <div className="comment" key={c.id}>
-            <div className="avatar">{c.iniciais}</div>
-            <div className="comment-content">
-              <span className="name">{c.nome}</span><span className="date">{c.data}</span>
-              <p>{c.texto}</p>
-              <div className="comment-actions">
-                <button className={c.curtido ? 'liked' : ''} onClick={() => onCurtirComentario(c.id)}>
-                  {c.curtido ? '♥' : '♡'} {c.curtidas} curtidas
-                </button>
-                {/* "Responder" é só visual por enquanto — sem threading implementado ainda */}
-                <button>Responder</button>
+      {carregando && <p className="sub">Carregando comentários...</p>}
+
+      {!carregando && erro && (
+        <p className="sub">Não foi possível carregar os comentários agora. Tente recarregar a página.</p>
+      )}
+
+      {!carregando && !erro && comentarios.length === 0 && (
+        <p className="sub">Ainda não há comentários nesta notícia. Seja o primeiro a comentar!</p>
+      )}
+
+      {!carregando && !erro && comentarios.length > 0 && (
+        <div className="comment-list">
+          {comentarios.map((c) => (
+            <div className="comment" key={c.id}>
+              <div className="avatar">{obterIniciais(c.usuario_nome)}</div>
+              <div className="comment-content">
+                <span className="name">{c.usuario_nome}</span>
+                <span className="date">{formatarDataComentario(c.criado_em)}</span>
+                <p>{c.conteudo}</p>
+                <div className="comment-actions">
+                  <button className={c.curtido_por_mim ? 'liked' : ''} onClick={() => onCurtirComentario(c.id)}>
+                    {c.curtido_por_mim ? '♥' : '♡'} {c.curtidas} curtida{c.curtidas === 1 ? '' : 's'}
+                  </button>
+                  {/* "Responder" é só visual por enquanto — sem threading implementado ainda */}
+                  <button>Responder</button>
+                </div>
               </div>
             </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
     </section>
   );
 }
@@ -311,7 +348,41 @@ function App() {
   const [modalAberto, setModalAberto] = useState(false);
   const [fontScale, setFontScale] = useState(1);
   const [tocAtivo, setTocAtivo] = useState('');
-  const [comentarios, setComentarios] = useState(comentariosIniciais);
+  const [comentarios, setComentarios] = useState([]);
+  const [carregandoComentarios, setCarregandoComentarios] = useState(true);
+  const [erroComentarios, setErroComentarios] = useState(false);
+  const [enviandoComentario, setEnviandoComentario] = useState(false);
+  const noticiaId = artigo?.id;
+
+  // Busca os comentários reais dessa notícia assim que a página carrega.
+  // Manda o usuário logado (se houver) na query pra API já dizer quais
+  // comentários esse usuário já curtiu (curtido_por_mim).
+  useEffect(() => {
+    if (!noticiaId) {
+      setCarregandoComentarios(false);
+      return;
+    }
+
+    const usuario = obterUsuarioSessao();
+    const url = usuario?.id
+      ? `/api/comentarios/noticia/${noticiaId}?usuarioId=${encodeURIComponent(usuario.id)}`
+      : `/api/comentarios/noticia/${noticiaId}`;
+
+    setCarregandoComentarios(true);
+    setErroComentarios(false);
+
+    fetch(url)
+      .then((resposta) => {
+        if (!resposta.ok) throw new Error('Erro ao buscar comentários');
+        return resposta.json();
+      })
+      .then((dados) => setComentarios(dados))
+      .catch((erro) => {
+        console.error('Erro ao carregar comentários:', erro);
+        setErroComentarios(true);
+      })
+      .finally(() => setCarregandoComentarios(false));
+  }, [noticiaId]);
 
   // Título da aba do navegador acompanha a notícia aberta
   useEffect(() => {
@@ -389,26 +460,82 @@ function App() {
   }
 
   function curtirComentario(id) {
+    const usuario = obterUsuarioSessao();
+    if (!usuario) {
+      abrirAvisoConta('Crie uma conta pra curtir comentários.');
+      return;
+    }
+
+    // Atualização otimista: já muda a carinha na hora, e ajusta de volta
+    // se a chamada pra API der errado.
     setComentarios((lista) =>
       lista.map((c) =>
         c.id === id
-          ? { ...c, curtido: !c.curtido, curtidas: c.curtido ? c.curtidas - 1 : c.curtidas + 1 }
+          ? { ...c, curtido_por_mim: !c.curtido_por_mim, curtidas: c.curtido_por_mim ? c.curtidas - 1 : c.curtidas + 1 }
           : c
       )
     );
+
+    fetch(`/api/comentarios/${id}/curtir`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ usuarioId: usuario.id }),
+    })
+      .then((resposta) => {
+        if (!resposta.ok) throw new Error('Erro ao curtir comentário');
+        return resposta.json();
+      })
+      .then((resultado) => {
+        setComentarios((lista) =>
+          lista.map((c) =>
+            c.id === id
+              ? { ...c, curtido_por_mim: resultado.curtidoPorMim, curtidas: resultado.curtidas }
+              : c
+          )
+        );
+      })
+      .catch((erro) => {
+        console.error('Erro ao curtir comentário:', erro);
+        // desfaz a atualização otimista
+        setComentarios((lista) =>
+          lista.map((c) =>
+            c.id === id
+              ? { ...c, curtido_por_mim: !c.curtido_por_mim, curtidas: c.curtido_por_mim ? c.curtidas - 1 : c.curtidas + 1 }
+              : c
+          )
+        );
+      });
   }
 
   function enviarComentario(texto) {
-    const novo = {
-      id: Date.now(),
-      iniciais: 'VC',
-      nome: 'Você',
-      data: 'agora',
-      texto,
-      curtidas: 0,
-      curtido: false,
-    };
-    setComentarios((lista) => [novo, ...lista]);
+    const usuario = obterUsuarioSessao();
+    if (!usuario) {
+      abrirAvisoConta('Crie uma conta pra comentar nesta notícia.');
+      return;
+    }
+
+    setEnviandoComentario(true);
+
+    fetch('/api/comentarios', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        conteudo: texto,
+        usuarioId: usuario.id,
+        usuarioNome: usuario.nome || usuario.email,
+        noticiaId,
+      }),
+    })
+      .then(async (resposta) => {
+        const dados = await resposta.json();
+        if (!resposta.ok) throw new Error(dados.erro || 'Erro ao publicar comentário');
+        setComentarios((lista) => [dados, ...lista]);
+      })
+      .catch((erro) => {
+        console.error('Erro ao enviar comentário:', erro);
+        alert('Não foi possível publicar seu comentário. Tente novamente.');
+      })
+      .finally(() => setEnviandoComentario(false));
   }
 
   // Se por algum motivo não existir nenhuma notícia no array, evita quebrar
@@ -528,6 +655,9 @@ function App() {
 
       <Comentarios
         comentarios={comentarios}
+        carregando={carregandoComentarios}
+        erro={erroComentarios}
+        enviando={enviandoComentario}
         onCurtirComentario={curtirComentario}
         onEnviar={enviarComentario}
       />
@@ -567,7 +697,6 @@ function App() {
 const raiz = ReactDOM.createRoot(document.getElementById('root'));
 raiz.render(<App />);
 </script>
-<script src="js/noticia.js"></script>
 
 </body>
 </html>
