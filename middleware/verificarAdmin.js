@@ -3,34 +3,12 @@
 // Confere se quem está fazendo a requisição é um usuário autenticado E
 // marcado como admin (app_metadata.is_admin === true) no Supabase Auth.
 //
-// CORREÇÃO IMPORTANTE em relação à versão anterior: o cliente do Supabase
-// agora é criado sob demanda (dentro da função), não no topo do arquivo.
-// Antes, se SUPABASE_URL ou SUPABASE_SERVICE_ROLE_KEY estivessem ausentes
-// ou errados, o createClient() lançava um erro assim que o arquivo era
-// importado — o que derrubava o server.js inteiro (todas as rotas do
-// site, não só as de admin) já que o require acontece em cascata no
-// carregamento do servidor. Agora, se faltar configuração, só a rota de
-// admin responde com erro — o resto do site continua no ar normalmente.
-
-const { createClient } = require("@supabase/supabase-js");
-
-let supabaseAdmin = null;
-
-function obterClienteSupabaseAdmin() {
-  if (supabaseAdmin) return supabaseAdmin;
-
-  const url = process.env.SUPABASE_URL;
-  const chave = process.env.SUPABASE_SERVICE_ROLE_KEY;
-
-  if (!url || !chave) {
-    throw new Error(
-      "Configuração ausente: verifique SUPABASE_URL e SUPABASE_SERVICE_ROLE_KEY nas variáveis de ambiente."
-    );
-  }
-
-  supabaseAdmin = createClient(url, chave);
-  return supabaseAdmin;
-}
+// O cliente do Supabase agora vem de config/supabaseAdmin.js (compartilhado
+// com controllers/conta.controller.js), em vez de ser criado aqui dentro —
+// mesma ideia de antes (criado sob demanda, não no topo do arquivo, pra um
+// erro de configuração não derrubar o server.js inteiro), só que numa
+// fonte única.
+const obterClienteSupabaseAdmin = require("../config/supabaseAdmin");
 
 async function verificarAdmin(req, res, next) {
   try {

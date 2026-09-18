@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Meu Perfil — Gira-Brasil</title>
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/auth.css">
+<link rel="stylesheet" href="css/perfil.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/auth.js"></script>
+</head>
+<body>
+
+<header class="header-site">
+  <div class="header-inner">
+    <a href="index.html" class="logo-site">Gira-Brasil</a>
+    <nav class="nav-site">
+      <a href="index.html">Início</a>
+      <a href="noticias.html">Notícias</a>
+      <a href="regioes.html">Regiões</a>
+      <a href="jogos.html">Jogos</a>
+      <a href="girabot.html">Gira-Bot</a>
+      <a href="sobre.html">Sobre</a>
+    </nav>
+    <div class="header-acoes">
+      <a href="login.html" class="link-entrar">Entrar</a>
+      <a href="cadastro.html" class="botao botao-primario">Criar conta</a>
+    </div>
+  </div>
+</header>
+
+<div class="perfil-wrap">
+  <div class="perfil-card">
+
+    <div class="perfil-topo">
+      <div class="perfil-avatar-grande" id="perfilAvatarGrande"></div>
+      <div>
+        <h1 class="perfil-nome-grande" id="perfilNomeGrande"></h1>
+        <div class="perfil-email" id="perfilEmail"></div>
+        <span class="perfil-badge-admin" id="perfilBadgeAdmin" style="display:none;">Perfil de administrador</span>
+      </div>
+    </div>
+
+    <div class="perfil-info">
+      <div class="perfil-info-linha" id="perfilLinhaMembroDesde">
+        <span>Membro desde</span>
+        <span id="perfilMembroDesde">—</span>
+      </div>
+    </div>
+
+    <div class="perfil-acoes">
+      <button class="btn-sair-conta" id="btnSairConta">Sair da conta</button>
+      <button class="btn-excluir-conta" id="btnExcluirConta">Excluir conta</button>
+    </div>
+
+  </div>
+</div>
+
+<footer class="footer-site">
+  <div class="footer-inner">
+    <div class="footer-marca">
+      <div class="logo-site">Gira-Brasil</div>
+      <p>Informação, tecnologia e educação para preservar a natureza brasileira.</p>
+    </div>
+    <div class="footer-col">
+      <h4>Navegar</h4>
+      <ul>
+        <li><a href="index.html">Início</a></li>
+        <li><a href="noticias.html">Notícias</a></li>
+        <li><a href="regioes.html">Regiões</a></li>
+        <li><a href="jogos.html">Jogos</a></li>
+        <li><a href="girabot.html">Gira-Bot</a></li>
+        <li><a href="sobre.html">Sobre</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Projeto</h4>
+      <ul>
+        <li><a href="#">Plataforma de educação ambiental</a></li>
+        <li><a href="#">Desenvolvida por estudantes</a></li>
+        <li><a href="#">Versão 2026 — em desenvolvimento</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-base">
+    <span>Gira-Brasil © 2026</span>
+    <span>Natureza • Informação • Educação • Tecnologia</span>
+  </div>
+</footer>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const usuario = obterUsuarioLogado();
+
+  // Página protegida: sem login, manda pra tela de login e volta pra cá depois
+  if (!usuario) {
+    window.location.href = 'login.html?redirect=perfil.html';
+    return;
+  }
+
+  const nome = usuario.nome || usuario.email.split('@')[0];
+  const iniciais = nome
+    .trim()
+    .split(/\s+/)
+    .slice(0, 2)
+    .map((parte) => parte[0])
+    .join('')
+    .toUpperCase();
+
+  document.getElementById('perfilAvatarGrande').textContent = iniciais;
+  document.getElementById('perfilNomeGrande').textContent = nome;
+  document.getElementById('perfilEmail').textContent = usuario.email;
+
+  // "Membro desde" — só mostra a linha se tivermos essa data (contas
+  // criadas antes desta atualização podem não ter o campo salvo ainda;
+  // nesse caso a pessoa só precisa sair e entrar de novo pra data aparecer).
+  const linhaMembroDesde = document.getElementById('perfilLinhaMembroDesde');
+  if (usuario.criadoEm) {
+    const data = new Date(usuario.criadoEm);
+    document.getElementById('perfilMembroDesde').textContent = data.toLocaleDateString('pt-BR', {
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric'
+    });
+  } else {
+    linhaMembroDesde.style.display = 'none';
+  }
+
+  // Indicação de admin — só aparece se for admin. Se não for, essa parte
+  // não é desenhada (fica escondida via style="display:none" no HTML).
+  if (usuario.is_admin) {
+    document.getElementById('perfilBadgeAdmin').style.display = 'inline-flex';
+  }
+
+  document.getElementById('btnSairConta').addEventListener('click', () => {
+    sairDaConta();
+    window.location.href = 'index.html';
+  });
+
+  document.getElementById('btnExcluirConta').addEventListener('click', excluirConta);
+});
+</script>
+
+</body>
+</html>

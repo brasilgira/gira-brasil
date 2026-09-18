@@ -1,0 +1,129 @@
+/* ==========================================================================
+   GiraBrasil — Estilos da página de Perfil
+   Importa base.css — usa as mesmas variáveis de cor/tipografia do site.
+   ========================================================================== */
+
+.perfil-wrap {
+  max-width: 560px;
+  margin: 0 auto;
+  padding: 64px 24px 96px;
+  min-height: calc(100vh - 74px);
+}
+
+.perfil-card {
+  background: var(--cor-fundo-alt);
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio);
+  padding: 40px;
+}
+
+.perfil-topo {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 28px;
+}
+
+.perfil-avatar-grande {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: var(--cor-floresta);
+  color: var(--cor-texto-claro);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 1.3rem;
+  flex-shrink: 0;
+}
+
+.perfil-nome-grande {
+  font-size: 1.4rem;
+  margin: 0 0 4px;
+}
+
+.perfil-email {
+  color: var(--cor-texto-suave);
+  font-size: 0.92rem;
+}
+
+.perfil-badge-admin {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin: 4px 0 0;
+  padding: 4px 12px;
+  border-radius: 999px;
+  background: rgba(45,106,73,0.12);
+  border: 1px solid rgba(45,106,73,0.3);
+  color: var(--cor-floresta);
+  font-size: 0.76rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+.perfil-badge-admin::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--cor-floresta);
+}
+
+.perfil-info {
+  border-top: 1px solid var(--cor-borda);
+  padding-top: 20px;
+  margin-top: 4px;
+}
+
+.perfil-info-linha {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 0;
+  font-size: 0.9rem;
+}
+.perfil-info-linha span:first-child {
+  color: var(--cor-texto-suave);
+}
+
+.perfil-acoes {
+  margin-top: 32px;
+  padding-top: 24px;
+  border-top: 1px solid var(--cor-borda);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.btn-sair-conta {
+  background: none;
+  border: 1px solid var(--cor-borda);
+  color: var(--cor-texto);
+  padding: 12px 20px;
+  border-radius: var(--raio-pequeno);
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: border-color 0.2s ease;
+}
+.btn-sair-conta:hover { border-color: var(--cor-floresta); }
+
+.btn-excluir-conta {
+  background: none;
+  border: 1px solid transparent;
+  color: #b3403a;
+  padding: 12px 20px;
+  border-radius: var(--raio-pequeno);
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.2s ease;
+}
+.btn-excluir-conta:hover { background: rgba(179,64,58,0.08); }
+
+@media (max-width: 600px) {
+  .perfil-wrap { padding: 40px 18px 72px; }
+  .perfil-card { padding: 28px 22px; }
+}

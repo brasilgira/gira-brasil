@@ -314,3 +314,11 @@
     text-align: center;
     padding: 80px 32px;
 }
+.eyebrow.claro {
+    color: #16281f;
+}
+.cta-institucional p {
+    color: #16281f;
+    max-width: 52ch;
+    margin: 0 auto 32px;
+}
