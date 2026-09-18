@@ -97,7 +97,7 @@ function TimelineSecao({ linhaDoTempo }) {
 }
 
 function EspecieCard({ item, tipo, onAbrir }) {
-  const emoji = tipo === 'fauna' ? '🐾' : '🌿';
+  const emoji = tipo === 'fauna' ? '' : '';
   return (
     <button className="especie-card" onClick={() => onAbrir(item, tipo)}>
       <div className="especie-emoji">{emoji}</div>
@@ -281,7 +281,7 @@ function App({ bioma }) {
           <div className="eyebrow claro">{bioma.categoria}</div>
           <h1>{bioma.nome}</h1>
           <p className="bioma-subtitulo">“{bioma.subtitulo}”</p>
-          <div className="bioma-localizacao">📍 {bioma.localizacao}</div>
+          <div className="bioma-localizacao"> {bioma.localizacao}</div>
         </div>
         <div className="bioma-scroll-indicador"><span>Explorar</span><span className="linha"></span></div>
       </section>
