@@ -304,3 +304,13 @@
     .grid-destaque { grid-template-columns: 1fr; }
     .hero-stats { flex-wrap: wrap; row-gap: 20px; }
   }
+  body > section.cta-institucional > div.cta-botoes > a.botao.botao-primario {
+    background: #16281f !important;
+    color: #e6e4db !important;
+}
+.cta-institucional {
+    background: #e6e4db;
+    color: #16281f;
+    text-align: center;
+    padding: 80px 32px;
+}
