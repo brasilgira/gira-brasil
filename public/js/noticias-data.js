@@ -35,6 +35,7 @@ window.NOTICIAS = [
   {
     id: 1,
     categoria: 'Desmatamento',
+    bioma: 'Amazônia',
     titulo: 'Desmatamento na Amazônia cai 17% no 1º trimestre, mas volta a subir em março',
     imagem: 'https://s2-g1.glbimg.com/09bqcChKWSsaWpWZdeQAugFVdVA=/0x0:4000x3000/984x0/smart/filters:strip_icc()/i.s3.glbimg.com/v1/AUTH_59edd422c0c84a879bd37670ae4f538a/internal_photos/bs/2022/Y/A/d4Hy2QR1KoZZ9HKNBSsg/2022-10-07t171259z-1021400778-rc2l7v9lsv3p-rtrmadp-3-brazil-environment.jpg',
     resumo: 'Levantamento do Imazon aponta que 348 km² de floresta foram derrubados entre janeiro e março deste ano. No acumulado do calendário de monitoramento, queda é de 36%, a menor área para o período desde 2017.',
@@ -88,6 +89,7 @@ window.NOTICIAS = [
   {
     id: 2,
     categoria: 'Queimadas',
+    bioma: 'Cerrado',
     titulo: 'Reunião técnica atualiza previsões climáticas e aponta intensificação do El Niño até dezembro',
     imagem: 'https://www.gov.br/mma/pt-br/noticias-defeso-eleitoral/reuniao-tecnica-atualiza-previsoes-climaticas-e-aponta-intensificacao-do-el-nino-ate-dezembro/mma_tamanho-site-97.png/@@images/19bb88e9-b3ce-456b-aca0-68d755604824.png',
     resumo: 'Especialistas indicam aumento do risco de incêndios florestais entre agosto e outubro, principalmente na Amazônia, Cerrado e parte do Centro-Oeste.',
@@ -119,6 +121,7 @@ window.NOTICIAS = [
   {
     id: 3,
     categoria: 'Energia Limpa',
+    bioma: 'Mata Atlântica',
     titulo: 'CineSolar leva cinema ao ar livre movido a energia solar para a Vila Ana com sessões gratuitas',
     imagem: 'https://jundiai.sp.gov.br/noticias/wp-content/uploads/sites/32/2026/06/cinesolar_morada_das_vinhas_complexo_francisco_gastaldo-37-de-54-1280x854.jpg',
     resumo: 'A população de Jundiaí terá a oportunidade de vivenciar uma experiência cultural e educativa especial com mais uma edição do CineSolar, o primeiro cinema itinerante movido a energia solar do Brasil.',
@@ -146,6 +149,7 @@ window.NOTICIAS = [
   {
     id: 4,
     categoria: 'Biodiversidade',
+    bioma: 'Caatinga',
     titulo: 'Brasil apresenta na COP17 na Mongólia experiência de combate à degradação da terra e mitigação dos efeitos da seca',
     imagem: 'https://www.gov.br/mma/pt-br/noticias-defeso-eleitoral/brasil-apresenta-na-cop17-na-mongolia-experiencia-de-combate-a-degradacao-da-terra-e-mitigacao-dos-efeitos-da-seca/unccdcop17_horiz_2col.png/@@images/472b6abc-b75e-44eb-9577-6c0fc52c7298.png',
     resumo: 'A participação brasileira, coordenada pelo MMA, Itamaraty e ApexBrasil, ocorre nesta segunda-feira, dia 17.',
@@ -173,6 +177,7 @@ window.NOTICIAS = [
   {
     id: 5,
     categoria: 'Educação',
+    bioma: 'Nacional',
     titulo: 'MEC amplia ações de sustentabilidade na educação básica',
     imagem: 'https://images.educamaisbrasil.com.br/content/noticias/mec-amplia-acoes-de-sustentabilidade-na-educacao-basica_g.jpg',
     resumo: 'Iniciativas reforçam conscientização sobre mudanças climáticas nas escolas.',
@@ -199,6 +204,7 @@ window.NOTICIAS = [
   {
     id: 6,
     categoria: 'Tecnologia',
+    bioma: 'Nacional',
     titulo: '7 projetos de estudantes que inspiram soluções sustentáveis',
     imagem: 'https://ciclovivo.com.br/wp-content/uploads/2026/06/projetos-estudantes-ciclo-composteira-1024x683.jpg',
     resumo: 'De composteiras inteligentes a jardins flutuantes, conheça projetos que unem tecnologia, educação ambiental, inovação e impacto social.',
@@ -226,6 +232,7 @@ window.NOTICIAS = [
   {
     id: 7,
     categoria: 'Reciclagem',
+    bioma: 'Nacional',
     titulo: 'Do clima à reciclagem: avanços na agenda verde do Senado',
     imagem: 'https://imgs.search.brave.com/UiD_lyQVHeITprEL10Lmw7tzu9T7C4gAkX38G8mDQ2U/rs:fit:500:0:1:0/g:ce/aHR0cHM6Ly9jbGFz/c2ljLmV4YW1lLmNv/bS93cC1jb250ZW50/L3VwbG9hZHMvMjAy/NS8wMi9ldXJlY2lj/bG8uanBn',
     resumo: 'Resumo curto da reportagem, explicando do que se trata em uma ou duas linhas.',
@@ -252,6 +259,7 @@ window.NOTICIAS = [
   {
     id: 8,
     categoria: 'Espécies Ameaçadas',
+    bioma: 'Amazônia',
     titulo: 'Tambaqui entra na lista de espécies ameaçadas na Amazônia',
     imagem: 'https://revistaamazonia.com.br/wp-content/uploads/2026/08/capa-1786895228127-47437-1200x685.webp',
     resumo: 'Resumo curto da reportagem, explicando do que se trata em uma ou duas linhas.',
@@ -281,6 +289,7 @@ window.NOTICIAS = [
   {
     id: 9,
     categoria: 'Crise Climática',
+    bioma: 'Nacional',
     titulo: 'Brasil avança na governança climática, mas queimadas batem recorde e desastres custam R$ 38 bi',
     imagem: 'https://classic.exame.com/wp-content/uploads/2024/09/pzzb7670.webp?ims=750x/filters:quality(85):format(webp)',
     resumo: 'Segundo Anuário Estadual de Mudanças Climáticas mostra que desmatamento caiu 32%, mas incêndios explodiram em todos os biomas — e metade dos estados ainda não tem fundo climático estruturado.',
@@ -312,6 +321,7 @@ window.NOTICIAS = [
   {
     id: 10,
     categoria: 'Sustentabilidade',
+    bioma: 'Nacional',
     titulo: 'ESG Summit 2026: como a sustentabilidade entra na conta da perenidade dos negócios',
     imagem: 'https://classic.exame.com/wp-content/uploads/2026/05/DSCF9858.jpg?ims=750x/filters:quality(85):format(webp)',
     resumo: 'Com R$ 250 milhões investidos em energia renovável, Ypê defende que impacto ambiental e retorno econômico devem caminhar juntos.',
@@ -341,6 +351,7 @@ window.NOTICIAS = [
   {
     id: 11,
     categoria: 'Petróleo e Meio Ambiente',
+    bioma: 'Amazônia',
     titulo: 'Petrobras espera gastar R$ 3,3 bilhões em poços na Foz do Amazonas',
     imagem: 'https://imgs.search.brave.com/Qe8j9-FDhG8_-TBnWC_oMMwwF4_k4gzBECTqXbS9g1w/rs:fit:500:0:1:0/g:ce/aHR0cHM6Ly9tZWRp/YS5nZXR0eWltYWdl/cy5jb20vaWQvMjE1/MjY4NTIxMi9wdC9m/b3RvL2Etd29ya2Vy/LWF0LWEtcGV0cm9i/cmFzLWdhcy1zdGF0/aW9uLWluLXNhby1w/YXVsby1icmF6aWwt/b24tdGh1cnNkYXkt/bWF5LTE2LTIwMjQt/YnJhemlscy5qcGc_/cz02MTJ4NjEyJnc9/MCZrPTIwJmM9LXpF/M05nakRDSkpNM3ot/Z3F6Q19UY1p5TXR2/d0o2LW14Ql9pbnRH/NUdiUT0',
     resumo: 'Instituto ambiental ainda não autorizou exploração de novas perfurações; estatal encontrou petróleo em primeiro poço.',
@@ -370,6 +381,7 @@ window.NOTICIAS = [
   {
     id: 12,
     categoria: 'Economia Verde',
+    bioma: 'Nacional',
     titulo: 'Investimentos privados em meio ambiente no Brasil somam R$ 48,2 bi em 2025',
     imagem: 'https://admin.cnnbrasil.com.br/wp-content/uploads/sites/12/2025/10/meioambiente.png?w=1200&h=900&crop=0&quality=90',
     resumo: 'Amcham aponta crescimento de 24% em investimentos em energia limpa, reflorestamento e economia circular.',

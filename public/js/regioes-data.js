@@ -1,0 +1,93 @@
+// ============================================================================
+// js/regioes-data.js
+//
+// Fonte única de dados das 5 regiões geográficas do Brasil — mesmo padrão
+// que já usamos em js/biomas-data.js (window.BIOMAS) e js/noticias-data.js
+// (window.NOTICIAS). Aqui é window.REGIOES.
+//
+// Usado em dois lugares:
+//   1) regioes.html — o painel interativo com mapa + pílulas (js/regioes.js)
+//   2) public/regioes/*.html — as páginas dedicadas de notícias de cada
+//      região (js/noticias-regiao.js), uma tela cheia por região
+//
+// `bioma` aqui é a chave que liga a região ao filtro de bioma que já existe
+// em noticias.html (window.NOTICIAS[].bioma) — é o que faz o botão
+// "Explorar notícias" abrir a lista já filtrada pela região certa.
+//
+// ⚠️ `noticias` abaixo ainda é conteúdo de exemplo/placeholder (só usado
+// pelo painel interativo de regioes.html). As páginas dedicadas novas não
+// mostram essa lista — ainda não temos as notícias reais de cada região.
+// ============================================================================
+
+window.REGIOES = {
+  norte: {
+    id: 1,
+    nome: 'Norte',
+    apelido: 'Amazônia',
+    bioma: 'Amazônia',
+    imagem: 'assets/biomas/bioma-amazonia.jpg',
+    estados: 'Amazonas, Pará, Acre, Amapá, Rondônia, Roraima e Tocantins',
+    descricao: 'Concentra a maior parte da floresta amazônica brasileira e a bacia hidrográfica mais volumosa do mundo.',
+    temas: ['Desmatamento', 'Rios voadores', 'Povos da floresta', 'Bioeconomia'],
+    noticias: [
+      { titulo: 'Novo sistema de monitoramento detecta alertas de desmatamento em 24 horas', tag: 'Desmatamento', data: '8 de agosto de 2026' },
+      { titulo: 'Sensores instalados no dossel medem o pulso climático das florestas', tag: 'Clima', data: '29 de julho de 2026' }
+    ]
+  },
+  nordeste: {
+    id: 2,
+    nome: 'Nordeste',
+    apelido: 'Caatinga',
+    bioma: 'Caatinga',
+    imagem: 'assets/biomas/bioma-caatinga.jpg',
+    estados: 'Maranhão, Piauí, Ceará, Rio Grande do Norte, Paraíba, Pernambuco, Alagoas, Sergipe e Bahia',
+    descricao: 'Único bioma exclusivamente brasileiro, a Caatinga é marcada pela vegetação adaptada à seca e por um ciclo de chuvas irregular.',
+    temas: ['Seca', 'Convivência com o semiárido', 'Energia solar', 'Biodiversidade endêmica'],
+    noticias: [
+      { titulo: 'Bancos de sementes ajudam produtores a driblar períodos de estiagem', tag: 'Agricultura', data: '3 de agosto de 2026' },
+      { titulo: 'Espécie de cacto endêmica é redescoberta após 15 anos', tag: 'Biodiversidade', data: '22 de julho de 2026' }
+    ]
+  },
+  'centro-oeste': {
+    id: 3,
+    nome: 'Centro-Oeste',
+    apelido: 'Cerrado & Pantanal',
+    bioma: 'Cerrado',
+    imagem: 'assets/biomas/bioma-cerrado.jpg',
+    estados: 'Mato Grosso, Mato Grosso do Sul, Goiás e Distrito Federal',
+    descricao: 'Berço das águas do Brasil, reúne o Cerrado — savana mais biodiversa do mundo — e boa parte do Pantanal.',
+    temas: ['Agropecuária', 'Nascentes', 'Queimadas', 'Pantanal'],
+    noticias: [
+      { titulo: 'Corredores ecológicos ligam fragmentos de Cerrado no entorno de fazendas', tag: 'Conservação', data: '5 de agosto de 2026' },
+      { titulo: 'Monitoramento por satélite acompanha nível de alagamento do Pantanal', tag: 'Tecnologia', data: '18 de julho de 2026' }
+    ]
+  },
+  sudeste: {
+    id: 4,
+    nome: 'Sudeste',
+    apelido: 'Mata Atlântica',
+    bioma: 'Mata Atlântica',
+    imagem: 'assets/biomas/bioma-mata-atlantica.jpg',
+    estados: 'São Paulo, Rio de Janeiro, Minas Gerais e Espírito Santo',
+    descricao: 'Região mais urbanizada do país, ainda guarda remanescentes importantes de Mata Atlântica em serras e parques costeiros.',
+    temas: ['Mata Atlântica', 'Recuperação florestal', 'Recursos hídricos', 'Áreas urbanas'],
+    noticias: [
+      { titulo: 'Mutirão de replantio recupera nascente que abastece região metropolitana', tag: 'Água', data: '7 de agosto de 2026' },
+      { titulo: 'Corredor de serra registra retorno de espécie de ave rara', tag: 'Biodiversidade', data: '30 de julho de 2026' }
+    ]
+  },
+  sul: {
+    id: 5,
+    nome: 'Sul',
+    apelido: 'Pampa & Araucárias',
+    bioma: 'Pampa',
+    imagem: 'assets/biomas/bioma-pampa.jpg',
+    estados: 'Paraná, Santa Catarina e Rio Grande do Sul',
+    descricao: 'Reúne remanescentes de Mata Atlântica ao norte e as paisagens abertas do Pampa ao sul, na fronteira com o Uruguai e a Argentina.',
+    temas: ['Pampa', 'Araucárias', 'Clima subtropical', 'Pecuária extensiva'],
+    noticias: [
+      { titulo: 'Produtores testam manejo que preserva campos nativos do Pampa', tag: 'Pecuária', data: '4 de agosto de 2026' },
+      { titulo: 'Projeto reflorestamento reintroduz araucárias em área de proteção', tag: 'Reflorestamento', data: '21 de julho de 2026' }
+    ]
+  }
+};

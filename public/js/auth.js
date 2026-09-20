@@ -1,6 +1,5 @@
 // ==========================================================================
-// GiraBrasil — Autenticação com Supabase (login.html, cadastro.html e
-// perfil.html)
+// GiraBrasil — Autenticação com Supabase (login.html e cadastro.html)
 //
 // IMPORTANTE: este arquivo usa EXCLUSIVAMENTE o Supabase Auth
 // (supabaseClient.auth.signUp / signInWithPassword). Não existe mais
@@ -9,21 +8,16 @@
 // porque ter dois sistemas de conta ao mesmo tempo é exatamente o que
 // estava causando o login não reconhecer contas criadas pelo outro caminho.
 //
-// O restante do site (Jogos, GiraBot, Notícia, Perfil) continua lendo o
-// "usuário logado" do localStorage — guardamos os dados básicos lá depois
-// que o Supabase confirma o login/cadastro. Isso inclui is_admin (lido do
-// app_metadata do Supabase — o único lugar em que essa permissão pode ser
-// setada, nunca pelo navegador) e criadoEm (data de criação da conta, usada
-// na tela de perfil).
+// O restante do site (Jogos, GiraBot, Notícia) continua lendo o "usuário
+// logado" do localStorage — guardamos os dados básicos lá depois que o
+// Supabase confirma o login/cadastro. Isso agora inclui is_admin, lido do
+// app_metadata do Supabase (o único lugar em que essa permissão pode ser
+// setada — nunca pelo navegador).
 // ==========================================================================
 
 const CHAVE_USUARIO = 'girabrasil_usuario';
 const SUPABASE_URL = 'https://tybkeihuwpelsmfdmzhj.supabase.co';
 const SUPABASE_ANON_KEY = 'sb_publishable_LpIRhyUfQIl14Ud8vHcoSw_nfTLveAZ';
-
-// Base da API do backend — mesma usada nas outras chamadas do site
-// (comentários, etc). Ajustar aqui quando for pra produção.
-const API_BASE = 'http://localhost:3000';
 
 const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
@@ -86,8 +80,7 @@ async function cadastrarUsuario(event) {
       email,
       nome,
       id: data.user.id,
-      is_admin: data.user.app_metadata?.is_admin === true,
-      criadoEm: data.user.created_at
+      is_admin: data.user.app_metadata?.is_admin === true
     });
     alert('Conta criada com sucesso!');
     window.location.href = obterRedirectDaUrl() || 'index.html';
@@ -118,8 +111,7 @@ async function logarUsuario(event) {
       email,
       nome,
       id: data.user ? data.user.id : null,
-      is_admin: data.user?.app_metadata?.is_admin === true,
-      criadoEm: data.user ? data.user.created_at : null
+      is_admin: data.user?.app_metadata?.is_admin === true
     });
 
     alert('Login realizado com sucesso!');
@@ -130,48 +122,6 @@ async function logarUsuario(event) {
       ? 'E-mail ou senha incorretos.'
       : error.message;
     alert('Erro ao entrar: ' + mensagem);
-  }
-}
-
-// ---- Excluir conta (perfil.html) ------------------------------------------
-// Apagar um usuário do Supabase Auth exige a SERVICE_ROLE_KEY, que só existe
-// no backend — por isso essa função chama uma rota própria em vez de falar
-// direto com o Supabase pelo navegador.
-//
-// ⚠️ AJUSTAR: URL/método abaixo são um palpite (DELETE /api/conta com o
-// token de sessão no header Authorization). Se a rota que vocês já
-// construíram tiver outro nome, é só trocar aqui.
-async function excluirConta() {
-  const usuario = obterUsuarioLogado();
-  if (!usuario) return;
-
-  if (!confirm('Tem certeza que deseja excluir sua conta? Essa ação não pode ser desfeita.')) {
-    return;
-  }
-
-  try {
-    const { data: sessaoData } = await supabaseClient.auth.getSession();
-    const token = sessaoData?.session?.access_token;
-
-    const resposta = await fetch(`${API_BASE}/api/conta`, {
-      method: 'DELETE',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`
-      }
-    });
-
-    if (!resposta.ok) {
-      const erroData = await resposta.json().catch(() => ({}));
-      throw new Error(erroData.erro || 'Erro ao excluir conta.');
-    }
-
-    sairDaConta();
-    alert('Conta excluída com sucesso.');
-    window.location.href = 'index.html';
-  } catch (erro) {
-    console.error('Erro ao excluir conta:', erro);
-    alert('Não foi possível excluir a conta agora: ' + erro.message);
   }
 }
 
@@ -193,11 +143,18 @@ function renderizarHeaderAuth() {
     .toUpperCase();
 
   container.innerHTML = `
-    <a href="perfil.html" class="perfil-usuario" id="perfilUsuario">
+    <div class="perfil-usuario" id="perfilUsuario" title="Clique para sair">
       <span class="perfil-avatar">${iniciais}</span>
       <span class="perfil-nome">${nome}</span>
-    </a>
+    </div>
   `;
+
+  document.getElementById('perfilUsuario').addEventListener('click', () => {
+    if (confirm('Sair da conta?')) {
+      sairDaConta();
+      window.location.reload();
+    }
+  });
 
   renderizarLinkAdmin(usuario);
 }
