@@ -87,3 +87,152 @@ img.card-noticia-imagem {
 @media (max-width: 640px) {
   .grid-noticias { grid-template-columns: 1fr; }
 }
+
+/* ==========================================================================
+   Filtros da página de Notícias (busca, temas, bioma/região)
+   ========================================================================== */
+
+.filtros-noticias {
+  margin-bottom: 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.filtros-linha-topo {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+}
+
+.campo-busca {
+  flex: 1 1 260px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  background: var(--cor-fundo-alt);
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio-pequeno);
+  color: var(--cor-texto-suave);
+}
+.campo-busca:focus-within {
+  border-color: var(--cor-destaque);
+}
+.campo-busca svg {
+  flex-shrink: 0;
+  opacity: 0.7;
+}
+.campo-busca input {
+  flex: 1;
+  border: none;
+  background: transparent;
+  outline: none;
+  font-size: 0.92rem;
+  color: var(--cor-texto);
+  font-family: inherit;
+}
+.campo-busca input::placeholder {
+  color: var(--cor-texto-suave);
+}
+.limpar-busca {
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-size: 1.1rem;
+  line-height: 1;
+  color: var(--cor-texto-suave);
+  padding: 2px 4px;
+}
+.limpar-busca:hover { color: var(--cor-texto); }
+
+.seletor-bioma {
+  padding: 10px 14px;
+  border-radius: var(--raio-pequeno);
+  border: 1px solid var(--cor-borda);
+  background: var(--cor-fundo-alt);
+  color: var(--cor-texto);
+  font-family: inherit;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+.seletor-bioma:focus {
+  outline: none;
+  border-color: var(--cor-destaque);
+}
+
+.botao-limpar-filtros {
+  white-space: nowrap;
+}
+
+.chips-temas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.chip-tema {
+  padding: 8px 16px;
+  border-radius: 999px;
+  border: 1px solid var(--cor-borda);
+  background: var(--cor-fundo-alt);
+  color: var(--cor-texto-suave);
+  font-size: 0.85rem;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+.chip-tema:hover {
+  border-color: var(--cor-destaque);
+  color: var(--cor-texto);
+}
+.chip-tema.ativo {
+  background: var(--cor-floresta);
+  border-color: var(--cor-floresta);
+  color: var(--cor-texto-claro);
+}
+
+.contador-resultados {
+  color: var(--cor-texto-suave);
+  font-size: 0.85rem;
+  margin-bottom: 20px;
+}
+
+.card-noticia-tags {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+.card-noticia-tags .tag { margin-bottom: 0; }
+.tag-bioma {
+  background: transparent;
+  color: var(--cor-texto-suave);
+  border-style: dashed;
+}
+
+.sem-resultados {
+  text-align: center;
+  padding: 64px 24px;
+  border: 1px dashed var(--cor-borda);
+  border-radius: var(--raio);
+  color: var(--cor-texto-suave);
+}
+.sem-resultados p {
+  margin-bottom: 16px;
+}
+
+/* Em telas menores, filtros empilham e o grid vira 1 coluna
+   (o grid de 2/3 colunas provavelmente já tem media queries próprias
+   em base.css/noticias.css — isso aqui é só a parte nova dos filtros) */
+@media (max-width: 720px) {
+  .filtros-linha-topo {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .seletor-bioma {
+    width: 100%;
+  }
+}
