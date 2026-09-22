@@ -241,22 +241,27 @@
   .chat-preview-cabecalho {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 0px;
     padding-bottom: 16px;
     border-bottom: 1px solid var(--cor-borda-escura);
     margin-bottom: 20px;
   }
-  .chat-preview-avatar {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    background: rgba(243, 241, 233, 0.1);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.1rem;
-    flex-shrink: 0;
-  }
+.chat-preview-avatar {
+  width: 120px;
+  height: 68px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  overflow: visible;
+}
+
+.chat-preview-avatar img {
+  width: 120px;
+  height: 68px;
+  object-fit: contain;
+  display: block;
+}
   .chat-preview-cabecalho .nome { font-family: var(--fonte-titulo); font-size: 1rem; }
   .chat-preview-cabecalho .status { font-size: 0.76rem; color: var(--cor-texto-suave-claro); }
 
