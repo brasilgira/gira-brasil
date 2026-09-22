@@ -10,22 +10,13 @@
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/noticia.css">
 <link rel="stylesheet" href="css/gate.css">
-
-<!-- Sistema de "conta" (simulado, sem backend ainda) + aviso de conta
-     necessária. Precisam vir carregados ANTES do script React abaixo,
-     porque o componente usa as funções globais deles (usuarioEstaLogado,
-     abrirAvisoConta). -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="js/auth.js"></script>
 <script src="js/gate.js"></script>
 
 <!-- Fonte única dos dados das notícias -->
-<script src="js/noticias-data.js"></script>
 
-<!-- ATENÇÃO: esta é a única página do site que usa React — é a "ilha"
-     combinada no planejamento do projeto. Carregada via CDN (sem build/Vite),
-     igual decidimos: React + ReactDOM prontos, e o Babel Standalone traduz o
-     JSX pra JavaScript puro direto no navegador (por isso o script principal
-     é do tipo text/babel, mais abaixo). -->
+<script src="js/noticias-data.js"></script>
 <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
 <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
 <script src="https://unpkg.com/@babel/standalone/babel.min.js" crossorigin></script>
@@ -697,6 +688,6 @@ function App() {
 const raiz = ReactDOM.createRoot(document.getElementById('root'));
 raiz.render(<App />);
 </script>
-
+<script src="js/auth.js"></script>
 </body>
 </html>
