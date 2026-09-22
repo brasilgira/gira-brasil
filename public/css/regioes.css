@@ -162,3 +162,170 @@
   @media (max-width: 860px) {
     .grid-regioes { grid-template-columns: 1fr; }
   }
+
+/* ==========================================================================
+   Página dedicada de UMA região (public/regioes/*.html)
+   ========================================================================== */
+
+.voltar-regioes {
+  max-width: var(--largura-max);
+  margin: 0 auto;
+  padding: 24px 32px 0;
+}
+.voltar-regioes a {
+  color: var(--cor-texto-suave);
+  font-size: 0.88rem;
+  text-decoration: none;
+}
+.voltar-regioes a:hover { color: var(--cor-texto); }
+
+.regiao-hero {
+  position: relative;
+  max-width: var(--largura-max);
+  margin: 24px auto 0;
+  padding: 0 32px;
+}
+.regiao-hero-imagem {
+  width: 100%;
+  aspect-ratio: 21/9;
+  object-fit: cover;
+  border-radius: var(--raio);
+  border: 1px solid var(--cor-borda);
+  display: block;
+}
+.regiao-hero-texto {
+  padding: 28px 4px 8px;
+}
+.regiao-hero-texto .tag { margin-bottom: 14px; }
+
+/* O "apelido" (ex: Amazônia, Caatinga...) — deixa claro de cara qual
+   identidade ambiental essa região representa, antes do nome oficial. */
+.regiao-apelido {
+  font-family: var(--fonte-corpo);
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--cor-destaque);
+  margin-bottom: 6px;
+}
+
+.regiao-hero-texto h1 {
+  font-size: clamp(2.2rem, 4vw, 3.2rem);
+  margin-bottom: 12px;
+}
+
+.regiao-estados {
+  color: var(--cor-texto-suave);
+  font-size: 0.95rem;
+  max-width: 60ch;
+}
+
+.regiao-corpo {
+  max-width: var(--largura-max);
+  margin: 0 auto;
+  padding: 8px 32px 96px;
+}
+
+.regiao-descricao {
+  font-size: 1.05rem;
+  line-height: 1.7;
+  color: var(--cor-texto);
+  max-width: 70ch;
+  margin-bottom: 40px;
+}
+
+.regiao-subtitulo {
+  font-family: var(--fonte-corpo);
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--cor-texto-suave);
+  margin-bottom: 14px;
+}
+
+.regiao-lista-temas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 40px;
+}
+.regiao-lista-temas .tag {
+  font-size: 0.85rem;
+  padding: 8px 16px;
+}
+
+.regiao-botoes {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.regiao-erro {
+  padding: 96px 32px;
+  text-align: center;
+  color: var(--cor-texto-suave);
+}
+
+@media (max-width: 720px) {
+  .regiao-hero-imagem { aspect-ratio: 4/3; }
+}
+
+/* ==========================================================================
+   Tela de NOTÍCIAS de UMA região (public/regioes/*.html + noticias-regiao.js)
+   Cada região tem uma cor de identidade própria, ligada ao seu bioma —
+   é o que dá o "visual adequado pra cada região" nos chips, tags e hero.
+   ========================================================================== */
+
+body[data-regiao="norte"]        { --cor-regiao: #16281F; --cor-regiao-suave: #E4EDE7; }
+body[data-regiao="nordeste"]     { --cor-regiao: #B5652E; --cor-regiao-suave: #F5E7DA; }
+body[data-regiao="centro-oeste"] { --cor-regiao: #8A6D1F; --cor-regiao-suave: #F0E9D2; }
+body[data-regiao="sudeste"]      { --cor-regiao: #1E5C45; --cor-regiao-suave: #E1EFE8; }
+body[data-regiao="sul"]          { --cor-regiao: #A9762E; --cor-regiao-suave: #F3E9D6; }
+
+.regiao-noticias-hero {
+  position: relative;
+  max-width: var(--largura-max);
+  margin: 24px auto 0;
+  padding: 0 32px;
+}
+.regiao-noticias-hero .regiao-hero-imagem {
+  filter: saturate(1.05);
+}
+.regiao-noticias-hero .regiao-hero-texto {
+  padding: 28px 4px 8px;
+}
+.regiao-noticias-hero .tag-regiao-cor {
+  background: var(--cor-regiao-suave);
+  border-color: var(--cor-regiao);
+  color: var(--cor-regiao);
+}
+.regiao-noticias-hero .regiao-apelido {
+  color: var(--cor-regiao);
+}
+
+.regiao-noticias-corpo {
+  padding-top: 24px;
+}
+
+/* Chips de tema e busca ganham a cor da região, em vez do verde padrão */
+.regiao-noticias-corpo .chip-tema.ativo {
+  background: var(--cor-regiao);
+  border-color: var(--cor-regiao);
+  color: var(--cor-texto-claro);
+}
+.regiao-noticias-corpo .campo-busca:focus-within {
+  border-color: var(--cor-regiao);
+}
+
+.tag-regiao-cor {
+  background: var(--cor-regiao-suave);
+  border-color: var(--cor-regiao);
+  color: var(--cor-regiao);
+}
+.tag-nacional {
+  background: transparent;
+  color: var(--cor-texto-suave);
+  border-style: dashed;
+}
