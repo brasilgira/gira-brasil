@@ -72,7 +72,8 @@
      (não existe um menu interno no modal), então "← Jogos" apenas
      fecha o modal e volta pro seletor de cards da página. */
   document.getElementById('btn-back').addEventListener('click', closeOverlay);
-  overlay.addEventListener('click', e => { if (e.target === overlay) closeOverlay(); });
+  // O jogo só deve ser fechado pelos controles explícitos (X, "← Jogos"
+  // ou Esc). Clicar fora do painel não interrompe a partida.
   document.addEventListener('keydown', e => { if (e.key === 'Escape' && overlay.classList.contains('active')) closeOverlay(); });
 
   /* Botões "Jogar" dentro de cada card (.jogo-card) abrem o jogo
@@ -251,7 +252,9 @@ ESPECIES.forEach(e => {
     imagens[e.nome] = img;
   });
 
-  let score = 0, lives = 3, level = 1, running = false, current = null, timer = 0, maxTime = 220, answered = false;
+  const QUIZ_FPS = 60;
+  const QUIZ_FRAME_MS = 1000 / QUIZ_FPS;
+  let score = 0, lives = 3, level = 1, running = false, current = null, timer = 0, maxTime = 220, answered = false, questionStartedAt = 0;
 let queue = [];
 let correct = 0;
 let categoriaAtual = 'Fácil';
@@ -282,6 +285,7 @@ if (queue.length === 0) {
   answered = false;
   timer = 0;
   maxTime = Math.max(100, 220 - level * 15);
+  questionStartedAt = performance.now();
 
   updateHUD(score, categoriaAtual, lives);
   updateDifficultyColor();
@@ -326,9 +330,16 @@ function buildQueue() {
     if (answered) return; answered = true;
 
     if (nome === current.nome) {
-      score += 10 + (level * 3); correct++;
+      // Cada ponto equivale a 10 ms restantes. O tempo decorrido é medido
+      // pelo relógio real para não confundir frames do desenho com segundos.
+      const tempoTotalMs = maxTime * QUIZ_FRAME_MS;
+      const tempoDecorridoMs = Math.max(0, performance.now() - questionStartedAt);
+      const tempoRestanteMs = Math.max(0, tempoTotalMs - tempoDecorridoMs);
+      const pontos = Math.floor(tempoRestanteMs / 10);
+      score += pontos;
+      correct++;
       btn.classList.add('correct');
-      popup(W / 2, H / 2, '#22c55e', `+${10 + level * 3} ✓`);
+      popup(W / 2, H / 2, '#22c55e', `+${pontos} ✓`);
     } else {
       lives--;
       btn.classList.add('wrong');
@@ -515,6 +526,11 @@ function buildQueue() {
       'Você é uma <strong>onça-pintada</strong> fugindo do desmatamento!<br>Pule obstáculos com <strong>Espaço/Clique</strong> e agache com <strong>↓</strong>.');
 
     const GH=H; const GROUND=GH-50;
+    const ONCA_RENDER_WIDTH = 80;
+    const ONCA_RENDER_HEIGHT = 50;
+    const FIRE_ASPECT_RATIO = 16 / 9;
+    const FIRE_RENDER_WIDTH = ONCA_RENDER_HEIGHT * FIRE_ASPECT_RATIO;
+    const FIRE_RENDER_HEIGHT = ONCA_RENDER_HEIGHT;
     let score=0,lives=3,level=1,running=false,dist=0;
     let onca={x:90,y:GROUND,vy:0,onGround:true,ducking:false,w:48,h:32};
     let obstacles=[],powerups=[],bgX=0,speed=3.2,tick=0,obsTick=0,obsInterval=110;
@@ -649,8 +665,8 @@ if (!onca.onGround) {
     else img = imgRun8;
   }
 
-  const w = 80;
-  const h = 50;
+  const w = ONCA_RENDER_WIDTH;
+  const h = ONCA_RENDER_HEIGHT;
 
   const px = onca.x - w / 2;
   const py = onca.y - h;
@@ -733,7 +749,7 @@ if (!onca.onGround) {
     const OBS_TYPES=[
       {w:treeFgCanvas.width*0.7,h:treeFgCanvas.height*0.7,type:'tree'},
       {w:treeFgCanvas.width*0.85,h:treeFgCanvas.height*0.85,type:'tree'},
-      {type:'fire', scale:0.6},
+      {type:'fire'},
       {w:52,h:28,c:'#607d8b',label:'🚜',type:'machine'},
     ];
 
@@ -768,15 +784,15 @@ if (!onca.onGround) {
   else if (frame === 4) img = fireImg5;
   else img = fireImg6;
 
-  const scale = ob.scale || 1;
+  // O fogo usa a mesma altura renderizada da onça e calcula a largura
+  // proporcionalmente ao aspecto original de cada frame, sem deformar.
+  const aspectRatio = img.naturalWidth && img.naturalHeight
+    ? img.naturalWidth / img.naturalHeight
+    : FIRE_ASPECT_RATIO;
+  const h = ONCA_RENDER_HEIGHT;
+  const w = h * aspectRatio;
 
-  // 🔥 usa proporção real da imagem
-  const w = img.width * scale;
-  const h = img.height * scale;
-
-  const yOffset = 15;
-
-  const y = ob.oy - h; 
+  const y = ob.oy;
 
 ctx.drawImage(img, ob.x, y, w, h);
 }
@@ -809,20 +825,13 @@ function drawObstacle(ob) {
 
       }
       else if (t.type === 'fire') {
-
-  const scale = t.scale || 1;
-
-  const baseSize = 60; // 👈 CONTROLE REAL DO TAMANHO
-
-  const w = baseSize * scale;
-  const h = baseSize * scale;
-
-obstacles.push({
-  x: W + 20,
-  oy: GROUND,   // base do chão (referência)
-  type: 'fire',
-  scale: scale
-});
+        obstacles.push({
+          x: W + 20,
+          oy: GROUND - FIRE_RENDER_HEIGHT,
+          w: FIRE_RENDER_WIDTH,
+          h: FIRE_RENDER_HEIGHT,
+          type: 'fire'
+        });
 
 } else {
   const isLow = t.type==='low'||t.type==='machine';
