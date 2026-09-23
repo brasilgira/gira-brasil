@@ -109,10 +109,10 @@ h1, h2, h3 {
 
 /* Variante usada sobre fundo escuro (hero, footer) */
 .botao-secundario.sobre-escuro {
-  color: var(--cor-texto-claro);
+  color: var(--cor-texto);
   border-color: var(--cor-borda-escura);
 }
-.botao-secundario.sobre-escuro:hover { border-color: var(--cor-texto-claro); }
+
 
 /* --- Selo/Tag de categoria --- */
 .tag {
@@ -301,7 +301,7 @@ h1, h2, h3 {
 
 .projeto-frase {
   font-size: 0.9rem;
-  color: var(--cor-texto-claro);
+  color: var(--cor-texto-suave-claro);
 }
 
 /* --- Mini-perfil no header (usuário logado) --- */
