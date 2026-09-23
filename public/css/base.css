@@ -163,16 +163,31 @@ h1, h2, h3 {
 
 .nav-site {
   display: flex;
-  gap: 28px;
+  gap: 8px;
 }
+
 .nav-site a {
+  display: inline-flex;
+  align-items: center;
+  padding: 7px 13px;
+  border: 1px solid transparent;
+  border-radius: 999px;
+
   font-size: 0.9rem;
   font-weight: 500;
   color: var(--cor-texto-suave);
-  transition: color 0.2s ease;
+
+  transition:
+    color 0.2s ease,
+    border-color 0.2s ease,
+    background-color 0.2s ease;
 }
+
 .nav-site a:hover,
-.nav-site a.ativo { color: var(--cor-texto); }
+.nav-site a.ativo {
+  color: var(--cor-texto);
+  border-color: var(--cor-floresta);
+}
 
 .header-acoes {
   display: flex;
