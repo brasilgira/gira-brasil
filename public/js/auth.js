@@ -172,6 +172,10 @@ function renderizarLinkAdmin(usuario) {
   link.textContent = 'Admin';
   link.className = 'header-link-admin';
 
+if (window.location.pathname.endsWith('/admin.html')) {
+  link.classList.add('ativo');
+}
+  
   const container = document.querySelector('.header-acoes');
   if (container) container.prepend(link);
 }
