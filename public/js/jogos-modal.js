@@ -1106,7 +1106,11 @@ function drawOnca() {
     }
 
     const treeFgCanvas = makeTreeCanvas(TREE_CANOPY, TREE_TRUNK, P);
-    const treeBgCanvas = makeTreeCanvas(TREE_CANOPY_BG, TRUNK_BG, 3);
+    const treeBgImg = new Image();
+treeBgImg.src = 'assets/games/arvore1fundo.png';
+
+const BG_TREE_HEIGHT = 120;
+const BG_TREE_WIDTH = BG_TREE_HEIGHT * (1224 / 1285);
 
     /* Posições fixas das árvores de fundo */
     const BG_TREES = [
@@ -1287,15 +1291,24 @@ function drawObstacle(ob) {
       /* árvores pixel art de fundo (paralaxe) */
       bgX -= speed * 0.3 * dt;
       if(bgX < -W) bgX = 0;
-      [0, W].forEach(ox => {
-        BG_TREES.forEach(t => {
-          const tx = t.x + ox + bgX;
-          const sc = t.scale;
-          const dw = treeBgCanvas.width * sc;
-          const dh = treeBgCanvas.height * sc;
-          ctx.drawImage(treeBgCanvas, tx - dw/2, GROUND - dh, dw, dh);
-        });
-      });
+ if (treeBgImg.complete && treeBgImg.naturalWidth > 0) {
+  [0, W].forEach(ox => {
+    BG_TREES.forEach(t => {
+      const tx = t.x + ox + bgX;
+      const sc = t.scale;
+      const dw = BG_TREE_WIDTH * sc;
+      const dh = BG_TREE_HEIGHT * sc;
+
+      ctx.drawImage(
+        treeBgImg,
+        tx - dw / 2,
+        GROUND - dh,
+        dw,
+        dh
+      );
+    });
+  });
+}
 
 /* 🆕 CHÃO COM IMAGEM AJUSTADO */
 const groundHeight = 320;
