@@ -613,7 +613,308 @@ fireImg6.src = 'assets/games/6F.png';
 
 //CHÃO
 const groundImg = new Image();
-groundImg.src = 'assets/games/chao.png'; 
+groundImg.src = 'assets/games/chao.png';
+
+/*
+ * Guarda as máscaras de transparência já calculadas.
+ *
+ * WeakMap:
+ * - cada imagem terá seu próprio cache;
+ * - quando a imagem não for mais usada, o navegador poderá
+ *   liberar a memória automaticamente.
+ */
+const pixelMaskCache = new WeakMap();
+
+/*
+ * Cria uma máscara com o alpha do sprite.
+ *
+ * A máscara não trabalha com a imagem original inteira.
+ * Ela trabalha com o tamanho em que o sprite realmente aparece
+ * no jogo.
+ */
+function getAlphaMask(sprite) {
+  if (!sprite || !sprite.img) {
+    return null;
+  }
+
+  /*
+   * Se a imagem ainda estiver carregando, naturalWidth será 0.
+   *
+   * Nesse caso, esperamos o próximo frame para criar a máscara.
+   */
+  if (
+    !sprite.img.complete ||
+    !sprite.img.naturalWidth
+  ) {
+    return null;
+  }
+
+  /*
+   * O sprite pode ter tamanho decimal.
+   * A máscara precisa usar números inteiros.
+   */
+  const width = Math.max(1, Math.ceil(sprite.w));
+  const height = Math.max(1, Math.ceil(sprite.h));
+
+  /*
+   * Cada imagem terá um Map com máscaras para os seus tamanhos.
+   *
+   * Exemplo:
+   *
+   * onca1.png
+   *   ├── 80x50
+   *   └── 100x60
+   */
+  let imageMasks = pixelMaskCache.get(sprite.img);
+
+  if (!imageMasks) {
+    imageMasks = new Map();
+    pixelMaskCache.set(sprite.img, imageMasks);
+  }
+
+  const cacheKey = `${width}x${height}`;
+
+  /*
+   * Se já criamos essa máscara anteriormente,
+   * reutilizamos sem ler os pixels novamente.
+   */
+  if (imageMasks.has(cacheKey)) {
+    return imageMasks.get(cacheKey);
+  }
+
+  /*
+   * Canvas invisível usado apenas para ler os pixels do sprite.
+   */
+  const maskCanvas = document.createElement('canvas');
+
+  maskCanvas.width = width;
+  maskCanvas.height = height;
+
+  const maskContext = maskCanvas.getContext('2d', {
+    willReadFrequently: true
+  });
+
+  /*
+   * Mantém a mesma configuração de suavização do canvas principal.
+   */
+  maskContext.imageSmoothingEnabled =
+    ctx.imageSmoothingEnabled;
+
+  maskContext.clearRect(
+    0,
+    0,
+    width,
+    height
+  );
+
+  /*
+   * Desenha o sprite no tamanho em que ele aparece no jogo.
+   */
+  maskContext.drawImage(
+    sprite.img,
+    0,
+    0,
+    width,
+    height
+  );
+
+  /*
+   * Lê os pixels RGBA:
+   *
+   * posição 0 = vermelho
+   * posição 1 = verde
+   * posição 2 = azul
+   * posição 3 = alpha/transparência
+   */
+  const imageData = maskContext.getImageData(
+    0,
+    0,
+    width,
+    height
+  );
+
+  /*
+   * Guardamos somente o canal alpha.
+   *
+   * alpha 0   = totalmente transparente
+   * alpha > 0 = existe pixel visível
+   */
+  const alpha = new Uint8Array(
+    width * height
+  );
+
+  for (
+    let i = 0, pixel = 0;
+    i < imageData.data.length;
+    i += 4, pixel++
+  ) {
+    alpha[pixel] = imageData.data[i + 3];
+  }
+
+  const mask = {
+    width,
+    height,
+    alpha
+  };
+
+  /*
+   * Guarda a máscara para reutilizar nos próximos frames.
+   */
+  imageMasks.set(cacheKey, mask);
+
+  return mask;
+}
+
+/*
+ * Verifica se dois sprites possuem pelo menos um pixel visível
+ * ocupando a mesma posição no canvas.
+ */
+function pixelPerfectCollision(spriteA, spriteB) {
+  if (!spriteA || !spriteB) {
+    return false;
+  }
+
+  if (
+    spriteA.w <= 0 ||
+    spriteA.h <= 0 ||
+    spriteB.w <= 0 ||
+    spriteB.h <= 0
+  ) {
+    return false;
+  }
+
+  const maskA = getAlphaMask(spriteA);
+  const maskB = getAlphaMask(spriteB);
+
+  /*
+   * Se alguma imagem ainda não terminou de carregar,
+   * não há máscara disponível.
+   */
+  if (!maskA || !maskB) {
+    return false;
+  }
+
+  /*
+   * Primeiro calcula a interseção dos retângulos.
+   *
+   * Isso é apenas uma otimização:
+   * se os retângulos nem se encostam,
+   * não precisamos verificar pixels.
+   */
+  const left = Math.max(
+    Math.floor(spriteA.x),
+    Math.floor(spriteB.x)
+  );
+
+  const right = Math.min(
+    Math.ceil(spriteA.x + spriteA.w),
+    Math.ceil(spriteB.x + spriteB.w)
+  );
+
+  const top = Math.max(
+    Math.floor(spriteA.y),
+    Math.floor(spriteB.y)
+  );
+
+  const bottom = Math.min(
+    Math.ceil(spriteA.y + spriteA.h),
+    Math.ceil(spriteB.y + spriteB.h)
+  );
+
+  /*
+   * Não existe área em comum.
+   */
+  if (
+    left >= right ||
+    top >= bottom
+  ) {
+    return false;
+  }
+
+  /*
+   * Verifica somente a região em que os sprites
+   * podem estar se encostando.
+   */
+  for (
+    let canvasY = top;
+    canvasY < bottom;
+    canvasY++
+  ) {
+    /*
+     * Converte a coordenada do canvas para a coordenada
+     * correspondente dentro da máscara de cada sprite.
+     */
+    const localAY = Math.floor(
+      ((canvasY - spriteA.y) / spriteA.h) *
+      maskA.height
+    );
+
+    const localBY = Math.floor(
+      ((canvasY - spriteB.y) / spriteB.h) *
+      maskB.height
+    );
+
+    /*
+     * Impede que a coordenada saia dos limites da máscara.
+     */
+    const safeAY = Math.max(
+      0,
+      Math.min(maskA.height - 1, localAY)
+    );
+
+    const safeBY = Math.max(
+      0,
+      Math.min(maskB.height - 1, localBY)
+    );
+
+    for (
+      let canvasX = left;
+      canvasX < right;
+      canvasX++
+    ) {
+      const localAX = Math.floor(
+        ((canvasX - spriteA.x) / spriteA.w) *
+        maskA.width
+      );
+
+      const localBX = Math.floor(
+        ((canvasX - spriteB.x) / spriteB.w) *
+        maskB.width
+      );
+
+      const safeAX = Math.max(
+        0,
+        Math.min(maskA.width - 1, localAX)
+      );
+
+      const safeBX = Math.max(
+        0,
+        Math.min(maskB.width - 1, localBX)
+      );
+
+      /*
+       * Converte X e Y para um índice unidimensional.
+       */
+      const indexA =
+        safeAY * maskA.width + safeAX;
+
+      const indexB =
+        safeBY * maskB.width + safeBX;
+
+      /*
+       * Só há colisão se os dois pixels forem visíveis.
+       */
+      if (
+        maskA.alpha[indexA] > 0 &&
+        maskB.alpha[indexB] > 0
+      ) {
+        return true;
+      }
+    }
+  }
+
+  return false;
+}
 
     function drawPixelSprite(sprite, px, py, scale) {
       const s = scale || P;
@@ -625,34 +926,37 @@ groundImg.src = 'assets/games/chao.png';
         });
       });
     }
-function drawOnca() {
+
+    /*
+ * Escolhe qual imagem da onça deve ser usada neste frame.
+ */
+function getCurrentOncaImage() {
   let img;
-  
-const distToGround = GROUND - onca.y;
 
-if (!onca.onGround) {
+  /*
+   * Durante o pulo, escolhe o frame de acordo
+   * com o progresso do pulo.
+   */
+  if (!onca.onGround) {
+    const t = jumpTime / jumpDuration;
 
-  const t = jumpTime / jumpDuration;
-
-  if (t < 0.2) {
-    img = imgJump1; // início (baixo)
-  } 
-  else if (t < 0.4) {
-    img = imgJump2; // subida
-  } 
-  else if (t < 0.6) {
-    img = imgJump3; // topo
-  } 
-  else if (t < 0.8) {
-    img = imgJump4; // descida
-  } 
-  else {
-    img = imgJump5; // aterrissagem
+    if (t < 0.2) {
+      img = imgJump1;
+    } else if (t < 0.4) {
+      img = imgJump2;
+    } else if (t < 0.6) {
+      img = imgJump3;
+    } else if (t < 0.8) {
+      img = imgJump4;
+    } else {
+      img = imgJump5;
+    }
   }
 
-}
-   else {
-    // 🟢 no chão → animação com 3 frames
+  /*
+   * No chão, escolhe um frame da animação de corrida.
+   */
+  else {
     const frame = Math.floor(tick / 2.4) % 8;
 
     if (frame === 0) img = imgRun1;
@@ -665,18 +969,82 @@ if (!onca.onGround) {
     else img = imgRun8;
   }
 
+  return img;
+}
+
+/*
+ * Atualiza a posição e o tamanho do sprite atual da onça.
+ *
+ * A colisão usará exatamente estes mesmos dados.
+ */
+function updateOncaSprite() {
+  const img = getCurrentOncaImage();
+
   const w = ONCA_RENDER_WIDTH;
   const h = ONCA_RENDER_HEIGHT;
 
+  /*
+   * onca.x representa o centro horizontal da onça.
+   * Por isso subtraímos metade da largura.
+   */
   const px = onca.x - w / 2;
+
+  /*
+   * onca.y representa a posição dos pés.
+   * Por isso desenhamos a imagem acima de onca.y.
+   */
   const py = onca.y - h;
 
-  ctx.drawImage(img, px, py, w, h);
+  /*
+   * Esta é a representação usada pela colisão por pixels.
+   */
+  onca.sprite = {
+    img,
+    x: px,
+    y: py,
+    w,
+    h
+  };
 
-  // hitbox
+  /*
+   * Mantemos os valores antigos para os outros obstáculos,
+   * que ainda usam colisão retangular.
+   *
+   * Isso preserva o comportamento anterior:
+   * a hitbox antiga tinha 70% da largura visual.
+   */
   onca.w = w * 0.7;
   onca.h = h;
+
+  return onca.sprite;
 }
+
+/*
+ * Desenha a onça usando o sprite preparado.
+ */
+function drawOnca() {
+  const sprite = updateOncaSprite();
+
+  /*
+   * Evita tentar desenhar uma imagem que ainda não terminou
+   * de carregar.
+   */
+  if (
+    sprite.img &&
+    sprite.img.complete &&
+    sprite.img.naturalWidth > 0
+  ) {
+    ctx.drawImage(
+      sprite.img,
+      sprite.x,
+      sprite.y,
+      sprite.w,
+      sprite.h
+    );
+  }
+}
+
+
 
     /* ── ÁRVORE PIXEL ART (inspirada na referência: copa redonda, tronco largo) ── */
     /* Copa: 14×10, Tronco: 4×5 — escala variável */
@@ -772,9 +1140,12 @@ if (!onca.onGround) {
     document.addEventListener('keyup',keyU);
     canvas.onclick=()=>jump();
 
-  function drawFire(ob) {
+function drawFire(ob) {
   let img;
 
+  /*
+   * Escolhe o frame atual da animação do fogo.
+   */
   const frame = Math.floor(tick / 6) % 6;
 
   if (frame === 0) img = fireImg1;
@@ -784,17 +1155,67 @@ if (!onca.onGround) {
   else if (frame === 4) img = fireImg5;
   else img = fireImg6;
 
-  // O fogo usa a mesma altura renderizada da onça e calcula a largura
-  // proporcionalmente ao aspecto original de cada frame, sem deformar.
-  const aspectRatio = img.naturalWidth && img.naturalHeight
+  /*
+   * Usa a proporção original da imagem.
+   *
+   * Se a imagem tiver 1920x1080:
+   *
+   * 1920 / 1080 = 1.777...
+   *
+   * Isso evita deformar o fogo.
+   */
+  const aspectRatio = (
+    img.naturalWidth &&
+    img.naturalHeight
+  )
     ? img.naturalWidth / img.naturalHeight
     : FIRE_ASPECT_RATIO;
+
+  /*
+   * O fogo terá a mesma altura visual da onça.
+   */
   const h = ONCA_RENDER_HEIGHT;
+
+  /*
+   * A largura será calculada automaticamente.
+   */
   const w = h * aspectRatio;
 
   const y = ob.oy;
 
-ctx.drawImage(img, ob.x, y, w, h);
+  /*
+   * Atualiza as dimensões do obstáculo.
+   */
+  ob.w = w;
+  ob.h = h;
+
+  /*
+   * Guarda o frame atual do fogo para a colisão.
+   */
+  ob.sprite = {
+    img,
+    x: ob.x,
+    y,
+    w,
+    h
+  };
+
+  /*
+   * Desenha exatamente o mesmo sprite que será usado
+   * na análise de colisão.
+   */
+  if (
+    img.complete &&
+    img.naturalWidth > 0
+  ) {
+    ctx.drawImage(
+      img,
+      ob.x,
+      y,
+      w,
+      h
+    );
+  }
 }
 
 function drawObstacle(ob) {
@@ -913,41 +1334,149 @@ ctx.drawImage(
         if(p.x<-20)p.alive=false;
       });
 
-      /* obstacles */
-      let hit = false;
-      obstacles.forEach(ob=>{
-        drawObstacle(ob);
-        ob.x -= speed*dt;
-        /* colisão */
-        const oh = onca.ducking ? 14 : onca.h;
-        const ox1 = onca.x - onca.w * 0.3;
-        const ox2 = onca.x + onca.w * 0.3;
-        const oy2 = onca.y - oh;
-        const obRight = ob.x + (ob.w || treeFgCanvas.width * 0.55);
-        if(!hit && obRight > ox1 && ob.x < ox2 && ob.oy < oy2+oh && ob.oy+ob.h > oy2){
-          ob.x = -200; hit = true;
-          lives--; shakePanel(); updateHUD(score,level,lives);
-          if(lives<=0){end(false);return;}
-        }
-      });
-      obstacles = obstacles.filter(o=>o.x>-200);
-      powerups  = powerups.filter(p=>p.alive&&p.x>-30);
+/*
+ * Atualiza primeiro a física da onça.
+ *
+ * Assim a colisão será calculada usando a posição atual
+ * da onça durante o pulo.
+ */
+if (!onca.onGround) {
+  onca.vy += GRAVITY * dt;
+  onca.y += onca.vy * dt;
 
-/* onça física */
-if(!onca.onGround){
-  onca.vy += GRAVITY*dt;
-  onca.y += onca.vy*dt;
-
-  jumpTime+=dt;
+  jumpTime += dt;
 }
 
-/* colisão com o chão (sempre checa) */
-if(onca.y >= GROUND){
+/*
+ * Verifica se a onça chegou ao chão.
+ */
+if (onca.y >= GROUND) {
   onca.y = GROUND;
   onca.vy = 0;
   onca.onGround = true;
   jumpTime = 0;
 }
+
+/*
+ * Prepara o frame atual da onça antes da colisão.
+ *
+ * Essa função cria:
+ *
+ * onca.sprite.img
+ * onca.sprite.x
+ * onca.sprite.y
+ * onca.sprite.w
+ * onca.sprite.h
+ */
+updateOncaSprite();
+
+/*
+ * Obstáculos.
+ */
+let hit = false;
+
+obstacles.forEach(ob => {
+  /*
+   * Move o obstáculo antes de desenhar.
+   *
+   * Dessa forma, a posição visual e a posição usada
+   * na colisão são iguais.
+   */
+  ob.x -= speed * dt;
+
+  /*
+   * Para o fogo, drawObstacle() chama drawFire().
+   * drawFire() cria ob.sprite com o frame atual.
+   */
+  drawObstacle(ob);
+
+  let collided = false;
+
+  /*
+   * O fogo usa colisão por pixels visíveis.
+   */
+  if (ob.type === 'fire') {
+    collided = pixelPerfectCollision(
+      onca.sprite,
+      ob.sprite
+    );
+  }
+
+  /*
+   * Árvores e máquinas continuam usando a colisão
+   * retangular anterior.
+   */
+  else {
+    const oh = onca.ducking
+      ? 14
+      : onca.h;
+
+    const ox1 =
+      onca.x - onca.w * 0.3;
+
+    const ox2 =
+      onca.x + onca.w * 0.3;
+
+    const oy2 =
+      onca.y - oh;
+
+    const obRight =
+      ob.x + (
+        ob.w ||
+        treeFgCanvas.width * 0.55
+      );
+
+    collided =
+      obRight > ox1 &&
+      ob.x < ox2 &&
+      ob.oy < oy2 + oh &&
+      ob.oy + ob.h > oy2;
+  }
+
+  /*
+   * Se a colisão aconteceu, perde uma vida.
+   */
+  if (!hit && collided) {
+    ob.x = -200;
+    hit = true;
+
+    lives--;
+
+    shakePanel();
+
+    updateHUD(
+      score,
+      level,
+      lives
+    );
+
+    if (lives <= 0) {
+      end(false);
+      return;
+    }
+  }
+});
+
+/*
+ * Remove obstáculos que saíram da tela.
+ */
+obstacles = obstacles.filter(
+  o => o.x > -200
+);
+
+/*
+ * Remove folhas coletadas ou que saíram da tela.
+ */
+powerups = powerups.filter(
+  p => p.alive && p.x > -30
+);
+
+/*
+ * Desenha a onça depois da colisão.
+ *
+ * A função desenhará o mesmo frame que foi
+ * preparado em updateOncaSprite().
+ */
 drawOnca();
 
       /* spawn obs */
