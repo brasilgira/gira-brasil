@@ -164,168 +164,276 @@
   }
 
 /* ==========================================================================
-   Página dedicada de UMA região (public/regioes/*.html)
+   Tela de NOTÍCIAS de UMA região (public/regioes/*.html + noticias-regiao.js)
    ========================================================================== */
 
 .voltar-regioes {
-  max-width: var(--largura-max);
+  max-width: min(1920px, 98vw);
   margin: 0 auto;
-  padding: 24px 32px 0;
+  padding: 20px 24px 0;
 }
 .voltar-regioes a {
-  color: var(--cor-texto-suave);
-  font-size: 0.88rem;
-  text-decoration: none;
-}
-.voltar-regioes a:hover { color: var(--cor-texto); }
-
-.regiao-hero {
-  position: relative;
-  max-width: var(--largura-max);
-  margin: 24px auto 0;
-  padding: 0 32px;
-}
-.regiao-hero-imagem {
-  width: 100%;
-  aspect-ratio: 21/9;
-  object-fit: cover;
-  border-radius: var(--raio);
-  border: 1px solid var(--cor-borda);
-  display: block;
-}
-.regiao-hero-texto {
-  padding: 28px 4px 8px;
-}
-.regiao-hero-texto .tag { margin-bottom: 14px; }
-
-/* O "apelido" (ex: Amazônia, Caatinga...) — deixa claro de cara qual
-   identidade ambiental essa região representa, antes do nome oficial. */
-.regiao-apelido {
-  font-family: var(--fonte-corpo);
-  font-size: 0.8rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: var(--cor-destaque);
-  margin-bottom: 6px;
-}
-
-.regiao-hero-texto h1 {
-  font-size: clamp(2.2rem, 4vw, 3.2rem);
-  margin-bottom: 12px;
-}
-
-.regiao-estados {
-  color: var(--cor-texto-suave);
-  font-size: 0.95rem;
-  max-width: 60ch;
-}
-
-.regiao-corpo {
-  max-width: var(--largura-max);
-  margin: 0 auto;
-  padding: 8px 32px 96px;
-}
-
-.regiao-descricao {
-  font-size: 1.05rem;
-  line-height: 1.7;
-  color: var(--cor-texto);
-  max-width: 70ch;
-  margin-bottom: 40px;
-}
-
-.regiao-subtitulo {
-  font-family: var(--fonte-corpo);
-  font-size: 0.78rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: var(--cor-texto-suave);
-  margin-bottom: 14px;
-}
-
-.regiao-lista-temas {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  margin-bottom: 40px;
-}
-.regiao-lista-temas .tag {
-  font-size: 0.85rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
   padding: 8px 16px;
+  border: 1px solid var(--cor-borda);
+  border-radius: 999px;
+  color: var(--cor-texto);
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: border-color 0.15s ease, transform 0.15s ease;
+}
+.voltar-regioes a:hover {
+  border-color: var(--cor-floresta);
+  transform: translateX(-2px);
 }
 
-.regiao-botoes {
-  display: flex;
-  gap: 14px;
-  flex-wrap: wrap;
-}
-
-.regiao-erro {
-  padding: 96px 32px;
-  text-align: center;
-  color: var(--cor-texto-suave);
-}
-
-@media (max-width: 720px) {
-  .regiao-hero-imagem { aspect-ratio: 4/3; }
-}
-
-/* ==========================================================================
-   Tela de NOTÍCIAS de UMA região (public/regioes/*.html + noticias-regiao.js)
-   Cada região tem uma cor de identidade própria, ligada ao seu bioma —
-   é o que dá o "visual adequado pra cada região" nos chips, tags e hero.
-   ========================================================================== */
-
-body[data-regiao="norte"]        { --cor-regiao: #16281F; --cor-regiao-suave: #E4EDE7; }
-body[data-regiao="nordeste"]     { --cor-regiao: #B5652E; --cor-regiao-suave: #F5E7DA; }
-body[data-regiao="centro-oeste"] { --cor-regiao: #8A6D1F; --cor-regiao-suave: #F0E9D2; }
-body[data-regiao="sudeste"]      { --cor-regiao: #1E5C45; --cor-regiao-suave: #E1EFE8; }
-body[data-regiao="sul"]          { --cor-regiao: #A9762E; --cor-regiao-suave: #F3E9D6; }
-
-.regiao-noticias-hero {
-  position: relative;
-  max-width: var(--largura-max);
-  margin: 24px auto 0;
-  padding: 0 32px;
-}
-.regiao-noticias-hero .regiao-hero-imagem {
-  filter: saturate(1.05);
-}
-.regiao-noticias-hero .regiao-hero-texto {
-  padding: 28px 4px 8px;
-}
-.regiao-noticias-hero .tag-regiao-cor {
-  background: var(--cor-regiao-suave);
-  border-color: var(--cor-regiao);
-  color: var(--cor-regiao);
-}
-.regiao-noticias-hero .regiao-apelido {
-  color: var(--cor-regiao);
-}
-
-.regiao-noticias-corpo {
-  padding-top: 24px;
-}
-
-/* Chips de tema e busca ganham a cor da região, em vez do verde padrão */
-.regiao-noticias-corpo .chip-tema.ativo {
+/* Cor de identidade de cada região, ligada ao bioma dela */
+body[data-regiao="norte"]        { --cor-regiao: #2E7D5B; }
+body[data-regiao="nordeste"]     { --cor-regiao: #C97A3D; }
+body[data-regiao="centro-oeste"] { --cor-regiao: #A68A2E; }
+body[data-regiao="sudeste"]      { --cor-regiao: #2E7D5B; }
+body[data-regiao="sul"]          { --cor-regiao: #B4903A; }
+:root { --cor-dourado: #E0B04A; }
+.tag-regiao-cor {
   background: var(--cor-regiao);
   border-color: var(--cor-regiao);
   color: var(--cor-texto-claro);
 }
-.regiao-noticias-corpo .campo-busca:focus-within {
-  border-color: var(--cor-regiao);
+
+/* ---------- Hero ---------- */
+.regiao-hero {
+  position: relative;
+  margin: 12px 24px 0;
+  border-radius: var(--raio);
+  overflow: hidden;
+  background-size: cover;
+  background-position: center 45%;
+  background-repeat: no-repeat;
+  min-height: 380px;
+  display: flex;
+  align-items: center;
+  padding: 40px;
+}
+.regiao-hero-conteudo { max-width: 620px; }
+.regiao-hero-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--cor-dourado);
+  font-family: var(--fonte-corpo);
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  margin-bottom: 14px;
+}
+.regiao-hero-titulo {
+  color: var(--cor-texto-claro);
+  font-size: clamp(2rem, 4vw, 2.9rem);
+  line-height: 1.15;
+  margin-bottom: 16px;
+}
+.regiao-hero-destaque { color: var(--cor-dourado); }
+.regiao-hero-texto {
+  color: var(--cor-texto-suave-claro);
+  font-size: 1rem;
+  line-height: 1.6;
+  max-width: 52ch;
 }
 
-.tag-regiao-cor {
-  background: var(--cor-regiao-suave);
-  border-color: var(--cor-regiao);
-  color: var(--cor-regiao);
+/* Card flutuante "Destaques da região", ancorado no canto do hero */
+.destaques-regiao-card {
+  position: absolute;
+  top: 24px;
+  right: 24px;
+  width: 300px;
+  background: rgba(22,40,31,0.92);
+  border: 1px solid rgba(224,176,74,0.35);
+  border-radius: var(--raio);
+  padding: 18px;
+  display: none;
 }
-.tag-nacional {
-  background: transparent;
+.destaques-regiao-card h4 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--cor-dourado);
+  font-family: var(--fonte-corpo);
+  font-size: 0.82rem;
+  font-weight: 700;
+  margin-bottom: 12px;
+}
+.destaque-regiao-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 0;
+  border-top: 1px solid rgba(255,255,255,0.1);
+  color: var(--cor-texto-claro);
+  font-size: 0.85rem;
+  line-height: 1.4;
+  text-decoration: none;
+}
+.destaque-regiao-item:first-of-type { border-top: none; padding-top: 0; }
+.destaque-regiao-icone { color: var(--cor-dourado); flex-shrink: 0; margin-top: 2px; }
+.destaque-regiao-seta { margin-left: auto; flex-shrink: 0; opacity: 0.6; }
+
+@media (min-width: 980px) {
+  .destaques-regiao-card { display: block; }
+}
+
+/* ---------- Layout: notícias (larga) + coluna lateral (mapa/stats/sobre) ----------
+   Aqui usamos uma largura maior que o --largura-max padrão do site (1180px),
+   de propósito: essa tela é mais "painel" que "artigo de leitura", então
+   aproveita a largura da tela pra deixar os cards de notícia bem maiores e
+   o bloco do mapa mais espremido lá no canto direito. */
+.regiao-layout {
+  max-width: min(1920px, 98vw);
+  margin: 0 auto;
+  padding: 32px 24px 96px;
+  display: grid;
+  grid-template-columns: 1fr 260px;
+  gap: 32px;
+  align-items: start;
+}
+
+.regiao-lateral {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* ---------- Coluna lateral ---------- */
+.regiao-mini-mapa-card {
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio);
+  background: var(--cor-fundo-alt);
+  padding: 18px;
+}
+.regiao-mini-mapa-card h4 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--fonte-corpo);
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--cor-regiao);
+  margin-bottom: 14px;
+}
+.regiao-mini-mapa {
+  width: 100%;
+  aspect-ratio: 1/1;
+  margin-bottom: 18px;
+}
+.regiao-mini-mapa svg { width: 100%; height: 100%; }
+.regiao-mini-mapa .regiao-mapa-path { fill: var(--cor-borda); stroke: var(--cor-fundo-alt); stroke-width: 1; vector-effect: non-scaling-stroke; }
+.regiao-mini-mapa .regiao-mapa.ativo .regiao-mapa-path { fill: var(--cor-regiao); }
+
+.regiao-stats { display: flex; flex-direction: column; gap: 14px; margin-bottom: 18px; }
+.regiao-stats li { display: flex; gap: 10px; align-items: flex-start; color: var(--cor-regiao); }
+.regiao-stats li div { display: flex; flex-direction: column; }
+.regiao-stats li strong { font-size: 0.95rem; color: var(--cor-texto); font-family: var(--fonte-corpo); }
+.regiao-stats li span { font-size: 0.76rem; color: var(--cor-texto-suave); }
+
+.regiao-frase {
+  border-top: 1px solid var(--cor-borda);
+  padding-top: 16px;
+  font-family: var(--fonte-titulo);
+  font-style: italic;
+  font-size: 0.9rem;
+  line-height: 1.5;
   color: var(--cor-texto-suave);
-  border-style: dashed;
+}
+
+/* ---------- Coluna central ---------- */
+.regiao-noticias-cabecalho-lista {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+.regiao-noticias-cabecalho-lista h2 { font-size: 1.6rem; }
+.regiao-select-ordem {
+  padding: 8px 14px;
+  border-radius: var(--raio-pequeno);
+  border: 1px solid var(--cor-borda);
+  background: var(--cor-fundo-alt);
+  font-family: inherit;
+  font-size: 0.85rem;
+  color: var(--cor-texto);
+  cursor: pointer;
+}
+
+.pills-tema-regiao { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; }
+.pill-tema-regiao {
+  padding: 8px 16px;
+  border-radius: 999px;
+  border: 1px solid var(--cor-borda);
+  background: var(--cor-fundo-alt);
+  font-size: 0.83rem;
+  font-family: inherit;
+  color: var(--cor-texto-suave);
+  cursor: pointer;
+}
+.pill-tema-regiao.ativo {
+  background: var(--cor-regiao);
+  border-color: var(--cor-regiao);
+  color: var(--cor-texto-claro);
+}
+
+.contador-resultados { color: var(--cor-texto-suave); font-size: 0.85rem; margin-bottom: 16px; }
+
+.card-noticia-placeholder p { font-style: italic; }
+
+/* Datas alinhadas: o grid já deixa os cards da mesma linha com a mesma
+   altura (comportamento padrão de CSS grid); aqui só viramos o card em
+   coluna e empurramos a data pro final com margin-top: auto, então ela
+   sempre cai na mesma posição vertical, tenha o título/resumo 1 ou 3
+   linhas. Aplicado só nas páginas de região (data-regiao no <body>),
+   não afeta os cards da página geral de notícias. */
+body[data-regiao] #regiao-noticias-grid .card-noticia {
+  display: flex;
+  flex-direction: column;
+}
+body[data-regiao] #regiao-noticias-grid .card-noticia-meta {
+  margin-top: auto;
+  padding-top: 12px;
+}
+
+/* ---------- Sobre a região (dentro da mesma coluna lateral) ---------- */
+.sobre-regiao-card {
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio);
+  background: var(--cor-fundo-alt);
+  padding: 20px;
+}
+.sobre-regiao-card h4 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--fonte-corpo);
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--cor-regiao);
+  margin-bottom: 12px;
+}
+.sobre-regiao-card p {
+  font-size: 0.88rem;
+  line-height: 1.6;
+  color: var(--cor-texto-suave);
+}
+
+.regiao-erro { padding: 96px 32px; text-align: center; color: var(--cor-texto-suave); }
+
+@media (max-width: 1080px) {
+  .regiao-layout { grid-template-columns: 1fr; }
+  .regiao-lateral { position: static; }
+}
+@media (max-width: 640px) {
+  .regiao-hero { margin: 12px 16px 0; padding: 28px; min-height: 280px; }
+  .regiao-layout { padding: 24px 16px 64px; }
 }
