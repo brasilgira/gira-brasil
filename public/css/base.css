@@ -159,6 +159,31 @@ h1, h2, h3 {
   text-transform: uppercase;
   letter-spacing: 0.02em;
 }
+
+/* Logo completo em telas amplas */
+.header-site .logo-site {
+  width: 192px;
+  height: 42px;
+  flex: 0 0 auto;
+  overflow: hidden;
+
+  /* Mantém o texto acessível, mas não o exibe visualmente */
+  color: transparent;
+  text-indent: -9999px;
+  white-space: nowrap;
+
+  background-image: url('../assets/logo/logovgira.svg');
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: 100% auto;
+}
+
+/* Destaque visual ao navegar pelo teclado */
+.header-site .logo-site:focus-visible {
+  outline: 2px solid var(--cor-floresta);
+  outline-offset: 4px;
+}
+
 .logo-site .folha { color: var(--cor-destaque); }
 
 .nav-site {
@@ -344,4 +369,12 @@ h1, h2, h3 {
 @media (max-width: 860px) {
   .nav-site { display: none; } /* menu mobile pode ser implementado depois, com JS */
   .footer-inner { grid-template-columns: 1fr; }
+
+    /* Apenas o símbolo em telas compactas */
+  .header-site .logo-site {
+    width: 46px;
+    height: 70px;
+    background-image: url('../assets/logo/logov.svg');
+    background-size: auto 220%;
+  }
 }
