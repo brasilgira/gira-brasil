@@ -28,6 +28,16 @@ window.REGIOES = {
     imagem: 'assets/biomas/bioma-amazonia.jpg',
     estados: 'Amazonas, Pará, Acre, Amapá, Rondônia, Roraima e Tocantins',
     descricao: 'Concentra a maior parte da floresta amazônica brasileira e a bacia hidrográfica mais volumosa do mundo.',
+    heroLinha1: 'A força da Amazônia',
+    heroLinha2: 'vive aqui',
+    area: '3,85 milhões km²',
+    populacao: '~ 18,4 milhões',
+    frase: 'A Amazônia não é apenas uma floresta, é o nosso maior patrimônio natural.',
+    destaques: [
+      'Conheça os principais rios voadores da Amazônia',
+      'A importância dos povos da floresta na preservação do bioma',
+      'Espécies que dependem da floresta em pé para sobreviver'
+    ],
     temas: ['Desmatamento', 'Rios voadores', 'Povos da floresta', 'Bioeconomia'],
     noticias: [
       { titulo: 'Novo sistema de monitoramento detecta alertas de desmatamento em 24 horas', tag: 'Desmatamento', data: '8 de agosto de 2026' },
@@ -42,6 +52,16 @@ window.REGIOES = {
     imagem: 'assets/biomas/bioma-caatinga.jpg',
     estados: 'Maranhão, Piauí, Ceará, Rio Grande do Norte, Paraíba, Pernambuco, Alagoas, Sergipe e Bahia',
     descricao: 'Único bioma exclusivamente brasileiro, a Caatinga é marcada pela vegetação adaptada à seca e por um ciclo de chuvas irregular.',
+    heroLinha1: 'A resistência da Caatinga',
+    heroLinha2: 'floresce aqui',
+    area: '1,55 milhão km²',
+    populacao: '~ 54,6 milhões',
+    frase: 'A Caatinga prova que a vida encontra um jeito, mesmo na seca mais dura.',
+    destaques: [
+      'Como comunidades convivem com o semiárido há gerações',
+      'Espécies endêmicas que só existem na Caatinga',
+      'O potencial da energia solar no Nordeste brasileiro'
+    ],
     temas: ['Seca', 'Convivência com o semiárido', 'Energia solar', 'Biodiversidade endêmica'],
     noticias: [
       { titulo: 'Bancos de sementes ajudam produtores a driblar períodos de estiagem', tag: 'Agricultura', data: '3 de agosto de 2026' },
@@ -56,6 +76,16 @@ window.REGIOES = {
     imagem: 'assets/biomas/bioma-cerrado.jpg',
     estados: 'Mato Grosso, Mato Grosso do Sul, Goiás e Distrito Federal',
     descricao: 'Berço das águas do Brasil, reúne o Cerrado — savana mais biodiversa do mundo — e boa parte do Pantanal.',
+    heroLinha1: 'O berço das águas do Brasil',
+    heroLinha2: 'nasce aqui',
+    area: '1,61 milhão km²',
+    populacao: '~ 16,3 milhões',
+    frase: 'O Cerrado é a caixa d\u2019água do Brasil — protegê-lo é proteger todos os outros biomas.',
+    destaques: [
+      'Por que o Cerrado é chamado de "berço das águas"',
+      'Como o Pantanal se recupera após temporadas de queimadas',
+      'Corredores ecológicos conectam fragmentos de savana'
+    ],
     temas: ['Agropecuária', 'Nascentes', 'Queimadas', 'Pantanal'],
     noticias: [
       { titulo: 'Corredores ecológicos ligam fragmentos de Cerrado no entorno de fazendas', tag: 'Conservação', data: '5 de agosto de 2026' },
@@ -70,6 +100,16 @@ window.REGIOES = {
     imagem: 'assets/biomas/bioma-mata-atlantica.jpg',
     estados: 'São Paulo, Rio de Janeiro, Minas Gerais e Espírito Santo',
     descricao: 'Região mais urbanizada do país, ainda guarda remanescentes importantes de Mata Atlântica em serras e parques costeiros.',
+    heroLinha1: 'A Mata Atlântica resiste',
+    heroLinha2: 'entre as cidades',
+    area: '924 mil km²',
+    populacao: '~ 84,8 milhões',
+    frase: 'Mesmo cercada de concreto, a Mata Atlântica segue abastecendo as maiores cidades do país.',
+    destaques: [
+      'Como nascentes urbanas ainda abastecem grandes cidades',
+      'Espécies raras que retornam a corredores de serra restaurados',
+      'O que restou da maior floresta costeira das Américas'
+    ],
     temas: ['Mata Atlântica', 'Recuperação florestal', 'Recursos hídricos', 'Áreas urbanas'],
     noticias: [
       { titulo: 'Mutirão de replantio recupera nascente que abastece região metropolitana', tag: 'Água', data: '7 de agosto de 2026' },
@@ -84,6 +124,16 @@ window.REGIOES = {
     imagem: 'assets/biomas/bioma-pampa.jpg',
     estados: 'Paraná, Santa Catarina e Rio Grande do Sul',
     descricao: 'Reúne remanescentes de Mata Atlântica ao norte e as paisagens abertas do Pampa ao sul, na fronteira com o Uruguai e a Argentina.',
+    heroLinha1: 'Os campos do Pampa',
+    heroLinha2: 'se estendem aqui',
+    area: '577 mil km²',
+    populacao: '~ 30,2 milhões',
+    frase: 'O Pampa mostra que paisagem aberta também é natureza — e também precisa de cuidado.',
+    destaques: [
+      'Manejo que preserva os campos nativos do Pampa',
+      'Projetos que reintroduzem araucárias em áreas protegidas',
+      'O clima subtropical e seus efeitos na biodiversidade local'
+    ],
     temas: ['Pampa', 'Araucárias', 'Clima subtropical', 'Pecuária extensiva'],
     noticias: [
       { titulo: 'Produtores testam manejo que preserva campos nativos do Pampa', tag: 'Pecuária', data: '4 de agosto de 2026' },
