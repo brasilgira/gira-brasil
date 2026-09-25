@@ -9,19 +9,39 @@ const pool = require("../config/db");
 
 async function listarNoticias() {
   const resultado = await pool.query(
-    `SELECT n.*, u.nome AS autor_nome, r.nome AS regiao_nome
+    `SELECT n.*, p.nome AS autor_nome, r.nome AS regiao_nome
      FROM noticias n
-     JOIN usuario u ON u.id = n.usuario_id
-     JOIN regiao r ON r.id = n.regiao_id
+     LEFT JOIN perfil p ON p.id = n.usuario_id
+     LEFT JOIN regiao r ON r.id = n.regiao_id
      ORDER BY n.criado_em DESC`
   );
   return resultado.rows;
 }
 
-async function editarNoticia(id, titulo, conteudo) {
+async function criarNoticia({ titulo, resumo, conteudo, imagemUrl, categoria, linkFonte, regiaoId, usuarioId }) {
   const resultado = await pool.query(
-    `UPDATE noticias SET titulo = $1, conteudo = $2 WHERE id = $3 RETURNING *`,
-    [titulo, conteudo, id]
+    `INSERT INTO noticias (titulo, resumo, conteudo, imagem_url, categoria, link_fonte, regiao_id, usuario_id)
+     VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+     RETURNING *`,
+    [titulo, resumo, conteudo, imagemUrl, categoria, linkFonte, regiaoId || null, usuarioId || null]
+  );
+  return resultado.rows[0];
+}
+
+async function editarNoticia(id, { titulo, resumo, conteudo, imagemUrl, categoria, linkFonte, regiaoId }) {
+  const resultado = await pool.query(
+    `UPDATE noticias SET
+       titulo = $1,
+       resumo = COALESCE($2, resumo),
+       conteudo = $3,
+       imagem_url = COALESCE($4, imagem_url),
+       categoria = COALESCE($5, categoria),
+       link_fonte = COALESCE($6, link_fonte),
+       regiao_id = COALESCE($7, regiao_id),
+       atualizado_em = now()
+     WHERE id = $8
+     RETURNING *`,
+    [titulo, resumo, conteudo, imagemUrl, categoria, linkFonte, regiaoId, id]
   );
   return resultado.rows[0] || null;
 }
@@ -69,6 +89,7 @@ async function apagarComentario(id) {
 
 module.exports = {
   listarNoticias,
+  criarNoticia,
   editarNoticia,
   apagarNoticia,
   listarComentarios,

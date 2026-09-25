@@ -11,16 +11,50 @@ async function listarNoticias(req, res) {
   }
 }
 
-async function editarNoticia(req, res) {
+async function criarNoticia(req, res) {
   try {
-    const { id } = req.params;
-    const { titulo, conteudo } = req.body;
+    const { titulo, resumo, conteudo, imagemUrl, categoria, linkFonte, regiaoId } = req.body;
 
     if (!titulo || !titulo.trim()) {
       return res.status(400).json({ erro: "O título não pode ficar vazio." });
     }
 
-    const noticia = await adminModel.editarNoticia(id, titulo.trim(), conteudo ?? "");
+    const noticia = await adminModel.criarNoticia({
+      titulo: titulo.trim(),
+      resumo: resumo ?? "",
+      conteudo: conteudo ?? "",
+      imagemUrl,
+      categoria,
+      linkFonte,
+      regiaoId,
+      usuarioId: req.usuarioAdmin?.id,
+    });
+
+    res.status(201).json({ mensagem: "Notícia criada.", noticia });
+  } catch (erro) {
+    console.error("Erro ao criar notícia (admin):", erro);
+    res.status(500).json({ erro: "Erro ao criar notícia." });
+  }
+}
+
+async function editarNoticia(req, res) {
+  try {
+    const { id } = req.params;
+    const { titulo, resumo, conteudo, imagemUrl, categoria, linkFonte, regiaoId } = req.body;
+
+    if (!titulo || !titulo.trim()) {
+      return res.status(400).json({ erro: "O título não pode ficar vazio." });
+    }
+
+    const noticia = await adminModel.editarNoticia(id, {
+      titulo: titulo.trim(),
+      resumo,
+      conteudo: conteudo ?? "",
+      imagemUrl,
+      categoria,
+      linkFonte,
+      regiaoId,
+    });
 
     if (!noticia) {
       return res.status(404).json({ erro: "Notícia não encontrada." });
@@ -99,6 +133,7 @@ async function apagarComentario(req, res) {
 
 module.exports = {
   listarNoticias,
+  criarNoticia,
   editarNoticia,
   apagarNoticia,
   listarComentarios,

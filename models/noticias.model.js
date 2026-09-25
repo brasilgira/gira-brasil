@@ -1,14 +1,14 @@
 const pool = require('../config/db');
 
-// Busca todas as notícias ativas, com JOIN na região e no usuário autor
+// Busca todas as notícias ativas, com JOIN na região (autor é opcional
+// agora — uma notícia de admin pode não ter um "usuario_id" formal).
 async function listarTodas(regiaoId) {
   let query = `
-    SELECT n.id, n.titulo, n.conteudo, n.criado_em, n.atualizado_em,
-           r.id AS regiao_id, r.nome AS regiao_nome,
-           u.id AS usuario_id, u.nome AS usuario_nome
+    SELECT n.id, n.titulo, n.resumo, n.conteudo, n.imagem_url, n.categoria,
+           n.link_fonte, n.criado_em, n.atualizado_em,
+           r.id AS regiao_id, r.nome AS regiao_nome
     FROM noticias n
-    JOIN regiao r ON r.id = n.regiao_id
-    JOIN usuario u ON u.id = n.usuario_id
+    LEFT JOIN regiao r ON r.id = n.regiao_id
     WHERE n.ativo = true
   `;
   const valores = [];
@@ -24,19 +24,82 @@ async function listarTodas(regiaoId) {
   return resultado.rows;
 }
 
-// Busca uma única notícia pelo ID
-async function buscarPorId(id) {
+// Busca uma única notícia pelo ID. `usuarioId` (opcional) é quem está
+// vendo a tela, só pra calcular se ELE já curtiu/salvou essa notícia.
+async function buscarPorId(id, usuarioId) {
   const resultado = await pool.query(
-    `SELECT n.id, n.titulo, n.conteudo, n.criado_em, n.atualizado_em,
+    `SELECT n.id, n.titulo, n.resumo, n.conteudo, n.imagem_url, n.categoria,
+            n.link_fonte, n.criado_em, n.atualizado_em,
             r.id AS regiao_id, r.nome AS regiao_nome,
-            u.id AS usuario_id, u.nome AS usuario_nome
+            COUNT(DISTINCT nc.id)::int AS curtidas,
+            COALESCE(BOOL_OR(nc.usuario_id = $2), false) AS curtido_por_mim,
+            COALESCE(BOOL_OR(ns.usuario_id = $2), false) AS salvo_por_mim
      FROM noticias n
-     JOIN regiao r ON r.id = n.regiao_id
-     JOIN usuario u ON u.id = n.usuario_id
-     WHERE n.id = $1 AND n.ativo = true`,
-    [id]
+     LEFT JOIN regiao r ON r.id = n.regiao_id
+     LEFT JOIN noticia_curtida nc ON nc.noticia_id = n.id
+     LEFT JOIN noticia_salva ns ON ns.noticia_id = n.id AND ns.usuario_id = $2
+     WHERE n.id = $1 AND n.ativo = true
+     GROUP BY n.id, r.id`,
+    [id, usuarioId || null]
   );
   return resultado.rows[0];
 }
 
-module.exports = { listarTodas, buscarPorId };
+// Cria uma notícia nova (usado pelo painel de admin)
+async function criar({ titulo, resumo, conteudo, imagemUrl, categoria, linkFonte, regiaoId, usuarioId }) {
+  const resultado = await pool.query(
+    `INSERT INTO noticias (titulo, resumo, conteudo, imagem_url, categoria, link_fonte, regiao_id, usuario_id)
+     VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+     RETURNING *`,
+    [titulo, resumo, conteudo, imagemUrl, categoria, linkFonte, regiaoId || null, usuarioId || null]
+  );
+  return resultado.rows[0];
+}
+
+// Alterna curtida numa notícia (like/unlike, tipo toggle) — igual já
+// funciona pra comentário, só que na notícia inteira agora.
+async function alternarCurtida(noticiaId, usuarioId) {
+  const existente = await pool.query(
+    'SELECT id FROM noticia_curtida WHERE noticia_id = $1 AND usuario_id = $2',
+    [noticiaId, usuarioId]
+  );
+  const jaCurtia = existente.rows.length > 0;
+
+  if (jaCurtia) {
+    await pool.query('DELETE FROM noticia_curtida WHERE id = $1', [existente.rows[0].id]);
+  } else {
+    await pool.query(
+      'INSERT INTO noticia_curtida (noticia_id, usuario_id) VALUES ($1, $2)',
+      [noticiaId, usuarioId]
+    );
+  }
+
+  const contagem = await pool.query(
+    'SELECT COUNT(*)::int AS total FROM noticia_curtida WHERE noticia_id = $1',
+    [noticiaId]
+  );
+
+  return { noticiaId: Number(noticiaId), curtidoPorMim: !jaCurtia, curtidas: contagem.rows[0].total };
+}
+
+// Alterna "salvar" numa notícia (favoritos, aparece no perfil)
+async function alternarSalvar(noticiaId, usuarioId) {
+  const existente = await pool.query(
+    'SELECT id FROM noticia_salva WHERE noticia_id = $1 AND usuario_id = $2',
+    [noticiaId, usuarioId]
+  );
+  const jaSalvou = existente.rows.length > 0;
+
+  if (jaSalvou) {
+    await pool.query('DELETE FROM noticia_salva WHERE id = $1', [existente.rows[0].id]);
+  } else {
+    await pool.query(
+      'INSERT INTO noticia_salva (noticia_id, usuario_id) VALUES ($1, $2)',
+      [noticiaId, usuarioId]
+    );
+  }
+
+  return { noticiaId: Number(noticiaId), salvoPorMim: !jaSalvou };
+}
+
+module.exports = { listarTodas, buscarPorId, criar, alternarCurtida, alternarSalvar };
