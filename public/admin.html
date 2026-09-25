@@ -3,114 +3,313 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Painel Administrativo — Gira Brasil</title>
+  <title>Painel Administrativo · Gira Brasil</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+
   <link rel="stylesheet" href="css/base.css" />
   <link rel="stylesheet" href="css/admin.css" />
 </head>
 <body>
 
-  <!-- Header — mesmo padrão das outras páginas do site.
-       Se o teu header real (index.html, noticias.html etc.) tiver uma
-       marcação diferente, substitui este bloco pelo mesmo HTML das
-       outras páginas, mantendo a classe "header-acoes" no container da
-       direita — é nela que auth.js injeta o mini-perfil e o link Admin. -->
-<header class="header-site">
-  <div class="header-inner">
-    <a href="index.html" class="logo-site">Gira-Brasil</a>
+  <!-- Mantido conforme a estrutura visual da home do Gira-Brasil. -->
+  <a class="pular-conteudo" href="#conteudo-principal">Pular para o conteúdo</a>
 
-    <nav class="nav-site">
-      <a href="index.html">Início</a>
-      <a href="noticias.html">Notícias</a>
-      <a href="regioes.html">Regiões</a>
-      <a href="jogos.html">Jogos</a>
-      <a href="girabot.html">Gira-Bot</a>
-      <a href="sobre.html">Sobre</a>
-    </nav>
+  <header class="header-site">
+    <div class="header-inner">
+      <a href="index.html" class="logo-site">Gira-Brasil</a>
+      <nav class="nav-site" aria-label="Navegação principal">
+        <a href="index.html">Início</a>
+        <a href="noticias.html">Notícias</a>
+        <a href="regioes.html">Regiões</a>
+        <a href="jogos.html">Jogos</a>
+        <a href="girabot.html">Gira-Bot</a>
+        <a href="sobre.html">Sobre</a>
+      </nav>
+      <div class="header-acoes">
+        <a href="login.html" class="link-entrar">Entrar</a>
+        <a href="cadastro.html" class="botao botao-primario">Criar conta</a>
+      </div>
+    </div>
+  </header>
 
-    <div class="header-acoes">
-      <a href="login.html" class="link-entrar">Entrar</a>
-      <a href="cadastro.html" class="botao botao-primario">Criar conta</a>
+  <div class="admin-shell">
+    <div class="admin-corpo">
+
+      <aside class="admin-menu" aria-label="Seções do painel">
+        <div class="admin-menu__cabecalho">
+          <span class="admin-menu__marca">Painel</span>
+          <span class="admin-menu__selo">ADMINISTRATIVO</span>
+        </div>
+
+        <button class="admin-menu__item is-ativo" data-secao="visao-geral" type="button">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true">
+            <rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/>
+            <rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/>
+          </svg>
+          <span>Visão geral</span>
+        </button>
+
+        <button class="admin-menu__item" data-secao="noticias" type="button">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true">
+            <path d="M4 4h16v16H4z"/><path d="M8 9h8M8 13h8M8 17h4"/>
+          </svg>
+          <span>Notícias</span>
+        </button>
+
+        <button class="admin-menu__item" data-secao="comentarios" type="button">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true">
+            <path d="M21 11.5a8.4 8.4 0 0 1-8.9 8.4 9 9 0 0 1-3.9-1L3 20l1.2-5.1a8.4 8.4 0 1 1 16.8-3.4Z"/>
+          </svg>
+          <span>Comentários</span>
+        </button>
+
+        <div class="admin-menu__rodape">
+          <a href="index.html" class="admin-menu__voltar">← Voltar ao site</a>
+        </div>
+      </aside>
+
+      <main id="conteudo-principal" class="admin-conteudo">
+
+        <section class="admin-intro" aria-labelledby="titulo-painel">
+          <div>
+            <div class="eyebrow">GESTÃO DO GIRABRASIL</div>
+            <h1 id="titulo-painel">Painel Administrativo</h1>
+            <p>Acompanhe os principais dados da plataforma, gerencie notícias e modere os comentários da comunidade.</p>
+          </div>
+
+          <div class="admin-usuario">
+            <div class="admin-usuario__avatar" data-admin-iniciais>A</div>
+            <div>
+              <strong data-admin-nome>Administrador</strong>
+              <span>Acesso administrativo</span>
+            </div>
+          </div>
+        </section>
+
+        <section class="admin-metricas" aria-label="Métricas gerais">
+          <article class="metrica">
+            <div class="metrica__topo">
+              <div class="metrica__icone" aria-hidden="true">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                  <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/>
+                  <path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/>
+                </svg>
+              </div>
+              <span class="metrica__etiqueta">Usuários</span>
+            </div>
+            <p class="metrica__valor" data-metrica="usuarios">—</p>
+            <p class="metrica__variacao" data-metrica-variacao="usuarios"></p>
+          </article>
+
+          <article class="metrica">
+            <div class="metrica__topo">
+              <div class="metrica__icone" aria-hidden="true">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                  <path d="M4 4h16v16H4z"/><path d="M8 9h8M8 13h8M8 17h5"/>
+                </svg>
+              </div>
+              <span class="metrica__etiqueta">Conteúdo</span>
+            </div>
+            <p class="metrica__valor" data-metrica="noticias">—</p>
+            <p class="metrica__variacao" data-metrica-variacao="noticias"></p>
+          </article>
+
+          <article class="metrica">
+            <div class="metrica__topo">
+              <div class="metrica__icone" aria-hidden="true">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                  <path d="M21 11.5a8.4 8.4 0 0 1-8.9 8.4 9 9 0 0 1-3.9-1L3 20l1.2-5.1a8.4 8.4 0 1 1 16.8-3.4Z"/>
+                </svg>
+              </div>
+              <span class="metrica__etiqueta">Comunidade</span>
+            </div>
+            <p class="metrica__valor" data-metrica="comentarios">—</p>
+            <p class="metrica__variacao" data-metrica-variacao="comentarios"></p>
+          </article>
+        </section>
+
+        <section class="admin-bloco admin-grafico" aria-label="Cadastros ao longo do tempo">
+          <div class="admin-bloco__cabecalho">
+            <div>
+              <div class="admin-secao-kicker">CRESCIMENTO</div>
+              <h2>Cadastros ao longo do tempo</h2>
+              <p class="admin-bloco__legenda">Novos usuários por mês nos últimos 12 meses</p>
+            </div>
+            <div class="grafico-legenda"><span></span> Novos usuários</div>
+          </div>
+
+          <div class="grafico-area">
+            <div class="grafico-eixo-y" data-grafico-eixo aria-hidden="true"></div>
+            <div class="grafico-barras" data-grafico-cadastros role="img" aria-label="Gráfico de barras de cadastros mensais"></div>
+          </div>
+        </section>
+
+        <div class="admin-duas-colunas">
+
+          <section id="noticias" class="admin-bloco bloco-tabela" aria-label="Gerenciador de notícias">
+            <div class="admin-bloco__cabecalho">
+              <div>
+                <div class="admin-secao-kicker">CONTEÚDO</div>
+                <h2>Gerenciador de notícias</h2>
+              </div>
+              <button class="botao botao--primario" type="button" data-abrir-modal="nova-noticia">
+                + Nova notícia
+              </button>
+            </div>
+
+            <div class="tabela-wrapper">
+              <table class="tabela-admin">
+                <thead>
+                  <tr>
+                    <th scope="col">Título</th>
+                    <th scope="col">Região</th>
+                    <th scope="col">Publicada em</th>
+                    <th scope="col">Ações</th>
+                  </tr>
+                </thead>
+                <tbody data-tabela="noticias"></tbody>
+              </table>
+            </div>
+          </section>
+
+          <section id="comentarios" class="admin-bloco bloco-tabela" aria-label="Moderação de comentários">
+            <div class="admin-bloco__cabecalho">
+              <div>
+                <div class="admin-secao-kicker">COMUNIDADE</div>
+                <h2>Moderação de comentários</h2>
+              </div>
+              <span class="admin-contador">Recentes</span>
+            </div>
+
+            <div class="tabela-wrapper">
+              <table class="tabela-admin">
+                <thead>
+                  <tr>
+                    <th scope="col">Autor</th>
+                    <th scope="col">Notícia</th>
+                    <th scope="col">Comentário</th>
+                    <th scope="col">Ações</th>
+                  </tr>
+                </thead>
+                <tbody data-tabela="comentarios"></tbody>
+              </table>
+            </div>
+          </section>
+
+        </div>
+      </main>
     </div>
   </div>
-</header>
 
-  <main class="admin-main">
-    <h1 class="admin-titulo">Painel Administrativo</h1>
-    <p class="admin-subtitulo">Gerencie notícias e comentários publicados na plataforma.</p>
+  <footer class="footer-site">
+    <div class="footer-inner">
+      <div class="footer-marca">
+        <div class="logo-site">Gira-Brasil</div>
+        <p>Informação, tecnologia e educação para preservar a natureza brasileira.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Navegar</h4>
+        <ul>
+          <li><a href="index.html">Início</a></li>
+          <li><a href="noticias.html">Notícias</a></li>
+          <li><a href="regioes.html">Regiões</a></li>
+          <li><a href="jogos.html">Jogos</a></li>
+          <li><a href="girabot.html">Gira-Bot</a></li>
+          <li><a href="sobre.html">Sobre</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Projeto</h4>
+        <ul>
+          <li class="projeto-frase">Versão 2026 — em desenvolvimento</li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-base">
+      <span>Gira-Brasil © 2026</span>
+      <span>Natureza • Informação • Educação • Tecnologia</span>
+    </div>
+  </footer>
 
-    <div id="admin-aviso" class="admin-aviso" hidden></div>
+  <!-- ===================== MODAL: Nova notícia ===================== -->
+  <div class="modal-fundo" data-modal="nova-noticia" hidden>
+    <div class="modal-caixa" role="dialog" aria-modal="true" aria-labelledby="titulo-modal-noticia">
+      <div class="modal-caixa__cabecalho">
+        <div>
+          <div class="admin-secao-kicker">CONTEÚDO</div>
+          <h2 id="titulo-modal-noticia">Cadastrar nova notícia</h2>
+        </div>
+        <button class="modal-fechar" type="button" data-fechar-modal aria-label="Fechar">×</button>
+      </div>
 
-    <nav class="admin-abas" aria-label="Seções do painel">
-      <button class="admin-aba admin-aba--ativa" data-aba="noticias" type="button">Notícias</button>
-      <button class="admin-aba" data-aba="comentarios" type="button">Comentários</button>
-    </nav>
+      <form class="formulario-admin" data-form="nova-noticia">
+        <label class="campo"><span>Título</span><input type="text" name="titulo" placeholder="Digite o título da notícia" required /></label>
+        <label class="campo"><span>Região</span>
+          <select name="regiao" required>
+            <option value="" disabled selected>Selecione a região</option>
+            <option value="amazonia">Amazônia</option>
+            <option value="caatinga">Caatinga</option>
+            <option value="cerrado">Cerrado</option>
+            <option value="mata-atlantica">Mata Atlântica</option>
+            <option value="pampa">Pampa</option>
+            <option value="pantanal">Pantanal</option>
+          </select>
+        </label>
+        <label class="campo"><span>URL da imagem de capa</span><input type="url" name="imagem" placeholder="https://exemplo.com/imagem.jpg" /></label>
+        <label class="campo"><span>Conteúdo</span><textarea name="conteudo" rows="6" placeholder="Digite o conteúdo da notícia" required></textarea></label>
+        <p class="aviso-indisponivel" data-aviso="nova-noticia">Ainda não conectado ao banco — essa notícia não vai ser salva de verdade por enquanto.</p>
+        <div class="formulario-admin__acoes">
+          <button class="botao botao--fantasma" type="button" data-fechar-modal>Cancelar</button>
+          <button class="botao botao--primario" type="submit">Publicar notícia</button>
+        </div>
+      </form>
+    </div>
+  </div>
 
-    <section id="painel-noticias" class="admin-painel">
-      <table class="admin-tabela">
-        <thead>
-          <tr>
-            <th>Título</th>
-            <th>Autor</th>
-            <th>Região</th>
-            <th>Ação</th>
-          </tr>
-        </thead>
-        <tbody id="tabela-noticias-corpo">
-          <tr>
-            <td colspan="4" class="admin-vazio">Carregando notícias…</td>
-          </tr>
-        </tbody>
-      </table>
-    </section>
+  <!-- ===================== MODAL: Editar comentário ===================== -->
+  <div class="modal-fundo" data-modal="editar-comentario" hidden>
+    <div class="modal-caixa" role="dialog" aria-modal="true" aria-labelledby="titulo-modal-comentario">
+      <div class="modal-caixa__cabecalho">
+        <div>
+          <div class="admin-secao-kicker">COMUNIDADE</div>
+          <h2 id="titulo-modal-comentario">Editar comentário</h2>
+        </div>
+        <button class="modal-fechar" type="button" data-fechar-modal aria-label="Fechar">×</button>
+      </div>
+      <form class="formulario-admin" data-form="editar-comentario">
+        <label class="campo"><span>Comentário</span><textarea name="comentario" rows="5" required></textarea></label>
+        <p class="aviso-indisponivel" data-aviso="editar-comentario">Ainda não conectado ao banco — a edição não vai ser salva de verdade por enquanto.</p>
+        <div class="formulario-admin__acoes">
+          <button class="botao botao--fantasma" type="button" data-fechar-modal>Cancelar</button>
+          <button class="botao botao--primario" type="submit">Salvar alteração</button>
+        </div>
+      </form>
+    </div>
+  </div>
 
-    <section id="painel-comentarios" class="admin-painel" hidden>
-      <table class="admin-tabela">
-        <thead>
-          <tr>
-            <th>Comentário</th>
-            <th>Autor</th>
-            <th>Notícia</th>
-            <th>Ações</th>
-          </tr>
-        </thead>
-        <tbody id="tabela-comentarios-corpo">
-          <tr>
-            <td colspan="4" class="admin-vazio">Carregando comentários…</td>
-          </tr>
-        </tbody>
-      </table>
-    </section>
-  </main>
-
-  <!-- Modal de edição de notícia -->
-  <div id="modal-editar-noticia" class="admin-modal" hidden>
-    <div class="admin-modal-caixa">
-      <h2>Editar notícia</h2>
-      <label class="admin-modal-label" for="modal-noticia-titulo">Título</label>
-      <input id="modal-noticia-titulo" type="text" />
-      <label class="admin-modal-label" for="modal-noticia-conteudo">Conteúdo</label>
-      <textarea id="modal-noticia-conteudo" rows="6"></textarea>
-      <div class="admin-modal-acoes">
-        <button id="modal-noticia-cancelar" type="button" class="botao-secundario">Cancelar</button>
-        <button id="modal-noticia-salvar" type="button" class="botao-primario">Salvar</button>
+  <!-- ===================== Confirmação de exclusão ===================== -->
+  <div class="modal-fundo" data-modal="confirmar-exclusao" hidden>
+    <div class="modal-caixa modal-caixa--estreita" role="alertdialog" aria-modal="true" aria-labelledby="titulo-modal-exclusao">
+      <div class="modal-caixa__cabecalho">
+        <div>
+          <div class="admin-secao-kicker">ATENÇÃO</div>
+          <h2 id="titulo-modal-exclusao">Apagar item</h2>
+        </div>
+        <button class="modal-fechar" type="button" data-fechar-modal aria-label="Fechar">×</button>
+      </div>
+      <p class="modal-caixa__texto" data-texto-exclusao>Tem certeza que quer apagar este item?</p>
+      <div class="formulario-admin__acoes">
+        <button class="botao botao--fantasma" type="button" data-fechar-modal>Cancelar</button>
+        <button class="botao botao--perigo" type="button" data-confirmar-exclusao>Apagar</button>
       </div>
     </div>
   </div>
 
-  <!-- Modal de edição de comentário -->
-  <div id="modal-editar-comentario" class="admin-modal" hidden>
-    <div class="admin-modal-caixa">
-      <h2>Editar comentário</h2>
-      <textarea id="modal-editar-texto" rows="4"></textarea>
-      <div class="admin-modal-acoes">
-        <button id="modal-editar-cancelar" type="button" class="botao-secundario">Cancelar</button>
-        <button id="modal-editar-salvar" type="button" class="botao-primario">Salvar</button>
-      </div>
-    </div>
-  </div>
+  <div class="toast" data-toast hidden role="status"></div>
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
-  <script src="js/auth.js"></script>
   <script src="js/admin.js"></script>
 </body>
 </html>
