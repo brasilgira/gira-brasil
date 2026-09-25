@@ -7,6 +7,7 @@ const verificarAdmin = require("../middleware/verificarAdmin");
 
 // Toda rota abaixo passa primeiro pelo verificarAdmin — sem exceção.
 router.get("/noticias", verificarAdmin, adminController.listarNoticias);
+router.post("/noticias", verificarAdmin, adminController.criarNoticia);
 router.put("/noticias/:id", verificarAdmin, adminController.editarNoticia);
 router.delete("/noticias/:id", verificarAdmin, adminController.apagarNoticia);
 
